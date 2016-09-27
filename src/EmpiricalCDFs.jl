@@ -3,9 +3,19 @@ module EmpiricalCDFs
 export EmpiricalCDF
 
 doc"""
-EmpiricalCDF()
+*EmpiricalCDF()*
 
 Return an empirical CDF.
+
+`EmpiricalCDF(n)`, `EmpiricalCDF(n,true)`,
+
+`print(ostr,cdf)` will print (not more than) `n` log spaced points after sorting the data.
+
+`EmpiricalCDF(n,false)` will print linearly spaced points.
+
+`push!(cdf,x)`  add a point to `cdf`
+
+`append!(cdf,a)`  add points to `cdf`.
 """
 
 immutable EmpiricalCDF{T <: Real}
