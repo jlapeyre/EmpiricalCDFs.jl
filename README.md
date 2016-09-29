@@ -14,7 +14,7 @@ Create and print empirical cummulative distribution functions (CDFs)
 
 `push!(cdf,x)` adds a datum to the cdf.
 
-`appends!(cdf,a)` appends data to the cdf.
+`append!(cdf,a)` appends data to the cdf.
 
 `logprint(ostr,cdf)` or `print(ostr,cdf)` prints the cdf.
 By default `2000` log spaced points of `cdf` are printed. Six fields are printed for each coordinate `x`:
