@@ -11,7 +11,7 @@ Return an empirical CDF.
 
 `print(ostr,cdf)` will print (not more than) `n` log spaced points after sorting the data.
 
-`EmpiricalCDF(n,false)` will print linearly spaced points.
+`EmpiricalCDF(n,false)` will print linearly spaced points, when printed.
 
 `push!(cdf,x)`  add a point to `cdf`
 
@@ -19,20 +19,47 @@ Return an empirical CDF.
 """
 
 immutable EmpiricalCDF{T <: Real}
-    xdata::Array{T,1}  # death times
     nprint_pts::Int
-    logprint::Bool
+    lowreject::T  # reject counts smaller than this
+    rejectcounts::Array{Int,1}
+    xdata::Array{T,1}  # death times    
 end
 
-EmpiricalCDF(nprint_pts::Int) = EmpiricalCDF(Array(Float64,0), nprint_pts, true)
-EmpiricalCDF() = EmpiricalCDF(2000,true)
-EmpiricalCDF(logprint::Bool) = EmpiricalCDF(2000,logprint)
 
-EmpiricalCDF(nprint_pts::Int, logprint::Bool) = EmpiricalCDF(Array(Float64,0), nprint_pts, logprint)
 
-Base.push!(cdf::EmpiricalCDF, time) = push!(cdf.xdata,time)
+function EmpiricalCDF(nprint_pts::Int, lowreject::Real)
+    cdf = EmpiricalCDF(nprint_pts, lowreject, Array(Int,1), Array(Float64,0))
+    cdf.rejectcounts[0] = 0
+    cdf
+end
 
-Base.append!(cdf::EmpiricalCDF, times) = append!(cdf.xdata,times)
+EmpiricalCDF(nprint_pts::Int) = EmpiricalCDF(nprint_pts, -Inf)
+
+EmpiricalCDF() = EmpiricalCDF(2000)
+
+increment_rejectcounts(cdf::EmpiricalCDF) = cdf.rejectcounts[0] += 1
+
+reject_counts(cdf::EmpiricalCDF) = cdf.rejectcounts[0]
+
+function Base.push!(cdf::EmpiricalCDF, x)
+    if ! isinf(cdf.lowreject)
+        if  x >= cdf.lowreject
+            push!(cdf.xdata,x)
+        end
+    end
+end
+
+function Base.append!(cdf::EmpiricalCDF, times)
+    if  isinf(cdf.lowreject)    
+        append!(cdf.xdata,times)
+    else
+        for x in times
+            if x >= cdf.lowreject
+                push!(cdf,x)
+            end
+        end
+    end
+end
 
 Base.sort!(cdf::EmpiricalCDF) = sort!(cdf.data)
 
@@ -42,8 +69,12 @@ function Base.print(cdf::EmpiricalCDF,fn::String)
     close(ostr)
 end
 
+Base.print(ostr::IOStream, cdf::EmpiricalCDF) = logprint(ostr,cdf)
+logprint(ostr::IOStream, cdf::EmpiricalCDF) = printcdf(ostr,cdf,true)
+linprint(ostr::IOStream, cdf::EmpiricalCDF) = printcdf(ostr,cdf,false)
+
 # Note that we sort in place
-function Base.print(ostr::IOStream, cdf::EmpiricalCDF)
+function printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool)
     x = cdf.xdata
     sort!(x)
     n = length(x)
@@ -51,7 +82,9 @@ function Base.print(ostr::IOStream, cdf::EmpiricalCDF)
     xmax = x[end]
     local prpts
     println(ostr, "# cdf of survival times")
-    if cdf.logprint
+    println(ostr, "# lowreject = ", cdf.lowreject)
+    println(ostr, "# lowreject counts = ", rejectcounts(cdf))
+    if logprint
         println(ostr, "# cdf: log spacing of coordinate")
         prpts = logspace(log10(xmin),log10(xmax), cdf.nprint_pts)        
     else
