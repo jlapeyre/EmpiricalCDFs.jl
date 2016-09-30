@@ -34,6 +34,8 @@ print (not more than) `n` linearly spaced points after sorting the data.
  more efficient than calling `cdf[x]` on single points in a loop.
 
 `length(cdf)`  return the number of data points in `cdf`.
+
+`rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
 """
 
 immutable EmpiricalCDF{T <: Real}
@@ -85,6 +87,8 @@ Base.length(cdf::EmpiricalCDF) = length(cdf.xdata)
 Base.sort!(cdf::EmpiricalCDF) = sort!(cdf.xdata)
 
 Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
+
+Base.rand(cdf::EmpiricalCDF) = cdf.xdata[Int(round(length(cdf)*rand()))]
 
 function Base.print(cdf::EmpiricalCDF,fn::String)
     ostr = open(fn,"w")
