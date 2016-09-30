@@ -5,7 +5,7 @@ export EmpiricalCDF
 doc"""
 *EmpiricalCDF(n=2000)*
 
-Return an empirical CDF. When printing, print only `n` point.
+Return an empirical CDF. When printing, print only `n` points.
 
 `print(ostr,cdf)` or `logprint(ostr,cdf)`
 
@@ -24,13 +24,13 @@ function names should probably end with `!`.
 
 When using `push!(cdf,x)` and `append!(cdf,a)`, points `x` for `x<xmin` will be rejected.
 The CDF will be properly normalized, but will be lower-truncated.
-This can be useful keeping all points would consume too much memory or to save time sorting.
+This can be useful if keeping all points would consume too much memory.
 """
 
 immutable EmpiricalCDF{T <: Real}
     nprint_pts::Int
     lowreject::T  # reject counts smaller than this
-    rejectcounts::Array{Int,1}
+    rejectcounts::Array{Int,1}  # how many rejections have we done
     xdata::Array{T,1}  # death times
 end
 
