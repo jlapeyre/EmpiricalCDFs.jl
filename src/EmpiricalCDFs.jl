@@ -1,17 +1,17 @@
 module EmpiricalCDFs
 
-export EmpiricalCDF
+export EmpiricalCDF, linprint, logprint
 
 doc"""
-*EmpiricalCDF(n=2000)*
+*EmpiricalCDF()*
 
-Return an empirical CDF. When printing, print only `n` points.
+Return an empirical CDF.
 
-`print(ostr,cdf)` or `logprint(ostr,cdf)`
+`print(ostr,cdf)` or `logprint(ostr,cdf,n=2000)`
 
 print (not more than) `n` log spaced points after sorting the data.
 
-`linprint(ostr,cdf)`
+`linprint(ostr,cdf,n=2000)`
 
 print (not more than) `n` linearly spaced points after sorting the data. These
 function names should probably end with `!`.
@@ -20,7 +20,7 @@ function names should probably end with `!`.
 
 `append!(cdf,a)`  add points to `cdf`.
 
-`EmpiricalCDF(n,xmin)`
+`EmpiricalCDF(xmin)`
 
 When using `push!(cdf,x)` and `append!(cdf,a)`, points `x` for `x<xmin` will be rejected.
 The CDF will be properly normalized, but will be lower-truncated.
@@ -28,21 +28,18 @@ This can be useful if keeping all points would consume too much memory.
 """
 
 immutable EmpiricalCDF{T <: Real}
-    nprint_pts::Int
     lowreject::T  # reject counts smaller than this
     rejectcounts::Array{Int,1}  # how many rejections have we done
     xdata::Array{T,1}  # death times
 end
 
-function EmpiricalCDF(nprint_pts::Int, lowreject::Real)
-    cdf = EmpiricalCDF(nprint_pts, lowreject, Array(Int,1), Array(Float64,0))
+function EmpiricalCDF(lowreject::Real)
+    cdf = EmpiricalCDF(lowreject, Array(Int,1), Array(Float64,0))
     cdf.rejectcounts[1] = 0
     cdf
 end
 
-EmpiricalCDF(nprint_pts::Int) = EmpiricalCDF(nprint_pts, -Inf)
-
-EmpiricalCDF() = EmpiricalCDF(2000)
+EmpiricalCDF() = EmpiricalCDF(-Inf)
 
 _increment_rejectcounts(cdf::EmpiricalCDF) = cdf.rejectcounts[1] += 1
 
@@ -83,11 +80,13 @@ function Base.print(cdf::EmpiricalCDF,fn::String)
 end
 
 Base.print(ostr::IOStream, cdf::EmpiricalCDF) = logprint(ostr,cdf)
-logprint(ostr::IOStream, cdf::EmpiricalCDF) = printcdf(ostr,cdf,true)
-linprint(ostr::IOStream, cdf::EmpiricalCDF) = printcdf(ostr,cdf,false)
+logprint(ostr::IOStream, cdf::EmpiricalCDF) = _printcdf(ostr,cdf,true, 2000)
+linprint(ostr::IOStream, cdf::EmpiricalCDF) = _printcdf(ostr,cdf,false, 2000)
+logprint(ostr::IOStream, cdf::EmpiricalCDF, nprint_pts) = _printcdf(ostr,cdf,true, nprint_pts)
+linprint(ostr::IOStream, cdf::EmpiricalCDF, nprint_pts) = _printcdf(ostr,cdf,false, nprint_pts)
 
 # Note that we sort in place
-function printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool)
+function _printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool, nprint_pts)
     x = cdf.xdata
     sort!(x)
     n = length(x)
@@ -105,10 +104,10 @@ function printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool)
     @printf(ostr, "# cdf: fraction kept = %f\n", n/(n+nreject))
     if logprint
         println(ostr, "# cdf: log spacing of coordinate")
-        prpts = logspace(log10(xmin),log10(xmax), cdf.nprint_pts)
+        prpts = logspace(log10(xmin),log10(xmax), nprint_pts)
     else
         println(ostr, "# cdf: linear spacing of coordinate")
-        prpts = linspace(xmin,xmax, cdf.nprint_pts)
+        prpts = linspace(xmin,xmax, nprint_pts)
     end
     println(ostr, "# cdf: number of points in cdf: $n")
     println(ostr, "# log10(t)  log10(P(t))  log10(1-P(t))  t  1-P(t)   P(t)")
