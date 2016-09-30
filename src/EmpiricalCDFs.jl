@@ -1,11 +1,11 @@
 module EmpiricalCDFs
 
-export EmpiricalCDF, linprint, logprint
+export EmpiricalCDF, linprint, logprint, getinverse
 
 doc"""
 *EmpiricalCDF()*
 
-Return an empirical CDF. The CDF must be sorted after inserting elements with `push!` or 
+Return an empirical CDF. The CDF must be sorted after inserting elements with `push!` or
 `append!`, and before being accessed using any of the functions below.
 
 `EmpiricalCDF(xmin)`
@@ -14,13 +14,9 @@ When using `push!(cdf,x)` and `append!(cdf,a)`, points `x` for `x<xmin` will be 
 The CDF will be properly normalized, but will be lower-truncated.
 This can be useful when generating too many points to store.
 
-`print(ostr,cdf)` or `logprint(ostr,cdf,n=2000)`
+`print(ostr,cdf)` or `logprint(ostr,cdf,n=2000)` print (not more than) `n` log spaced points after sorting the data.
 
-print (not more than) `n` log spaced points after sorting the data.
-
-`linprint(ostr,cdf,n=2000)`
-
-print (not more than) `n` linearly spaced points after sorting the data.
+`linprint(ostr,cdf,n=2000)` print (not more than) `n` linearly spaced points after sorting the data.
 
 `push!(cdf,x)`  add a point to `cdf`
 
@@ -28,14 +24,15 @@ print (not more than) `n` linearly spaced points after sorting the data.
 
 `sort!(cdf)` The data must be sorted before calling `cdf[x]`
 
-`cdf[x::Real]`  return the value of the cdf at the point `x`.
+`cdf[x::Real]`  return the value of `cdf` at the point `x`.
 
-`cdf[a::Array]` return the values of the cdf at the points in `a`. Note that `a` must be rather long before this is
- more efficient than calling `cdf[x]` on single points in a loop.
+`cdf[a::Array]` return the values of `cdf` at the points in `a`.
 
 `length(cdf)`  return the number of data points in `cdf`.
 
 `rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
+
+`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`.
 """
 
 immutable EmpiricalCDF{T <: Real}
@@ -88,7 +85,28 @@ Base.sort!(cdf::EmpiricalCDF) = sort!(cdf.xdata)
 
 Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
 
-Base.rand(cdf::EmpiricalCDF) = cdf.xdata[Int(round(length(cdf)*rand()))]
+function _inverse(cdf::EmpiricalCDF, x)
+    ind = Int(round(length(cdf)*x))
+    if ind < 1 ind = 1 end
+    cdf.xdata[ind]
+end
+
+Base.rand(cdf::EmpiricalCDF) = _inverse(cdf,rand())
+
+"`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`."
+function getinverse(cdf::EmpiricalCDF,x)
+    x < 0 || x > 1 && throw(DomainError())
+    _inverse(cdf,x)
+end
+
+# With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
+function Base.getindex{T <: Real}(cdf::EmpiricalCDF, v::Array{T})in
+    r = Array(eltype(cdf.xdata), size(v)...)
+    for (i,x) in enumerate(v)
+        r[i] = cdf[x]
+    end
+    r
+end
 
 function Base.print(cdf::EmpiricalCDF,fn::String)
     ostr = open(fn,"w")
@@ -96,11 +114,16 @@ function Base.print(cdf::EmpiricalCDF,fn::String)
     close(ostr)
 end
 
+
+"`linprint(ostr::IO ,cdf::EmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
+linprint(ostr::IOStream, cdf::EmpiricalCDF) = _printcdf(ostr,cdf,false, 2000)
+linprint(ostr::IOStream, cdf::EmpiricalCDF, nprint_pts) = _printcdf(ostr,cdf,false, nprint_pts)
+
 Base.print(ostr::IOStream, cdf::EmpiricalCDF) = logprint(ostr,cdf)
 logprint(ostr::IOStream, cdf::EmpiricalCDF) = _printcdf(ostr,cdf,true, 2000)
-linprint(ostr::IOStream, cdf::EmpiricalCDF) = _printcdf(ostr,cdf,false, 2000)
+
+"`logprint(ostr::IO, cdf::EmpiricalCDF, n=2000)` print (not more than) `n` log spaced points after sorting the data."
 logprint(ostr::IOStream, cdf::EmpiricalCDF, nprint_pts) = _printcdf(ostr,cdf,true, nprint_pts)
-linprint(ostr::IOStream, cdf::EmpiricalCDF, nprint_pts) = _printcdf(ostr,cdf,false, nprint_pts)
 
 # Note that we sort in place
 function _printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool, nprint_pts)
@@ -138,34 +161,6 @@ function _printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool, nprint_pts
             @printf(ostr,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(xp),  log10(1-cdf_val), log10(cdf_val), xp, cdf_val, 1-cdf_val)
         end
     end
-end
-
-# Copied from StatsBase
-# Return the values of the cdf at the points in v
-#function getindex{T <: Real}(cdf::EmpiricalCDF, v::Array{T})
-function Base.getindex{T <: Real}(cdf::EmpiricalCDF, v::Vector{T})
-    n = length(cdf)
-    ord = sortperm(v)
-    m = length(v)
-    r = Array(eltype(cdf.xdata), m)
-    r0 = 0
-    
-    i = 1
-    for x in cdf.xdata
-        while i <= m && x > v[ord[i]]
-            r[ord[i]] = r0
-            i += 1
-        end
-        r0 += 1
-        if i > m
-            break
-        end
-    end
-    while i <= m
-        r[ord[i]] = n
-        i += 1
-    end
-    return r / n
 end
 
 end # module
