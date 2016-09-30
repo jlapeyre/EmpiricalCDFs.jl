@@ -1,5 +1,7 @@
 module EmpiricalCDFs
 
+## TODO FIXME: Most routines do not work with `lowreject`. Only printing works.
+
 export EmpiricalCDF, linprint, logprint, getinverse
 
 doc"""
