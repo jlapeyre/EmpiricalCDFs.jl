@@ -8,7 +8,8 @@ Create and print empirical cummulative distribution functions (CDFs)
  ...
  print(ostr,cdf)
 
- cdf = EmpiricalCDF(xmin) # reject points `x < xmin` to save memory.
+# reject points `x < xmin` to save memory.
+ cdf = EmpiricalCDF(xmin) 
 ```
 
 `push!(cdf,x)` add a datum to the cdf.
@@ -25,7 +26,7 @@ By default `2000` log spaced points of `cdf` are printed. Six fields are printed
 
 `linprint(ostr,cdf)` prints linearly spaced points.
 
-`rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
+`rand(cdf)`  return a sample from the empirical probability distribution associated with `cdf`.
 
 `getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`.
 
