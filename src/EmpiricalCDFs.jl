@@ -51,6 +51,12 @@ end
 
 EmpiricalCDF() = EmpiricalCDF(-Inf)
 
+# Number of points accepted plus number of points rejected
+_total_counts(cdf::EmpiricalCDF) = length(cdf.xdata) + _rejectcounts(cdf)
+
+# Value of the cdf corresponding to index i
+_val_at_index(cdf::EmpiricalCDF, i) =  (i+ _rejectcounts(cdf) )/_total_counts(cdf)
+
 _increment_rejectcounts(cdf::EmpiricalCDF) = cdf.rejectcounts[1] += 1
 
 _rejectcounts(cdf::EmpiricalCDF) = cdf.rejectcounts[1]
@@ -81,15 +87,15 @@ function Base.append!(cdf::EmpiricalCDF, times)
     end
 end
 
-Base.length(cdf::EmpiricalCDF) = length(cdf.xdata)
-
-Base.sort!(cdf::EmpiricalCDF) = sort!(cdf.xdata)
-
-Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
+for f in ( :length, :sort!, :minimum, :maximum, :mean, :std, :quantile )
+    @eval begin
+        Base.$(f)(cdf::EmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+    end
+end
 
 function _inverse(cdf::EmpiricalCDF, x)
-    ind = Int(round(length(cdf)*x))
-    if ind < 1 ind = 1 end
+    x < cdf.lowreject && throw(DomainError())
+    ind = floor(Int, _total_counts(cdf)*x) + 1 - _rejectcounts(cdf)
     cdf.xdata[ind]
 end
 
@@ -97,9 +103,12 @@ Base.rand(cdf::EmpiricalCDF) = _inverse(cdf,rand())
 
 "`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`."
 function getinverse(cdf::EmpiricalCDF,x)
-    x < 0 || x > 1 && throw(DomainError())
+    (x < 0 || x >= 1) && throw(DomainError())
     _inverse(cdf,x)
 end
+
+#Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
+Base.getindex(cdf::EmpiricalCDF, x::Real) = _val_at_index(cdf, searchsortedlast(cdf.xdata, x))
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
 function Base.getindex{T <: Real}(cdf::EmpiricalCDF, v::Array{T})in
@@ -108,6 +117,13 @@ function Base.getindex{T <: Real}(cdf::EmpiricalCDF, v::Array{T})in
         r[i] = cdf[x]
     end
     r
+end
+
+function Base.show(io::IO, cdf::EmpiricalCDF)
+    print(io, string(typeof(cdf)))
+    print(io, "(n=")
+    print(io,length(cdf))
+    print(io,')')
 end
 
 function Base.print(cdf::EmpiricalCDF,fn::String)
@@ -159,7 +175,8 @@ function _printcdf(ostr::IOStream, cdf::EmpiricalCDF, logprint::Bool, nprint_pts
         xp = x[i]
         if xp >= prpts[j]
             j += 1
-            cdf_val = (i+nreject)/ntotal
+            _val_at_index(cdf,i)
+#            cdf_val = (i+nreject)/ntotal
             @printf(ostr,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(xp),  log10(1-cdf_val), log10(cdf_val), xp, cdf_val, 1-cdf_val)
         end
     end

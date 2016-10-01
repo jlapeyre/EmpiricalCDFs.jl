@@ -27,6 +27,11 @@ By default `2000` log spaced points of `cdf` are printed. Six fields are printed
 
 `rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
 
+`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`.
+
+Other methods that call a method of the same function on the data are `length`, `minimum`, `maximum`, `mean`, `std`,
+  `quantile`.
+
 See the doc strings for more information.
 
 [![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
