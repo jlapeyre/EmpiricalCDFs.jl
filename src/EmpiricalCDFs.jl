@@ -231,6 +231,9 @@ end
 
 # Note that we sort in place
 function _printcdf(io::IOStream, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts::Integer)
+    if length(cdf) == 0
+        error("Trying to print empty cdf")
+    end    
     x = cdf.xdata
     sort!(x)    
     xmin = x[1]
