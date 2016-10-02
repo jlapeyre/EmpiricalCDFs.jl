@@ -26,7 +26,7 @@ This can be useful when generating too many points to store.
 
 `linprint(io,cdf,n=2000)` print (not more than) `n` linearly spaced points after sorting the data.
 
-`print(io,cdf,a::AbstractArray)`,  `print(cdf,a::AbstractArray, fname)`  print cdf at points near those in a.
+`print(io,cdf,a::AbstractArray)`,  `print(cdf,a::AbstractArray, fname::String)`  print cdf at points near those in a.
 
 `push!(cdf,x)`  add a point to `cdf`
 

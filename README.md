@@ -6,10 +6,10 @@ Create and print empirical cummulative distribution functions (CDFs)
  cdf = EmpiricalCDF()
  push!(cdf,x)
  ...
- print(ostr,cdf)
+ print(io,cdf)
 
 # reject points `x < xmin` to save memory.
- cdf = EmpiricalCDF(xmin) 
+ cdf = EmpiricalCDF(xmin)
 ```
 
 `push!(cdf,x)` add a datum to the cdf.
@@ -20,18 +20,19 @@ Create and print empirical cummulative distribution functions (CDFs)
 
 `cdf[x]` return the value of `cdf` at the point `x`
 
-`logprint(ostr,cdf)` or `print(ostr,cdf)` print the cdf.
-By default `2000` log spaced points of `cdf` are printed. Six fields are printed for each coordinate `x`:
+`logprint(io,cdf)` or `print(io,cdf)` print the cdf.
+By default `2000` log-spaced points of `cdf` are printed, unless any samples are `< = 0`, in which case
+they are linearly spaced. Six fields are printed for each coordinate `x`:
 `log10(x)`, `log10(1-cdf_val)`, `log10(cdf_val)`, `x`, `cdf_val`, `1-cdf_val`.
 
-`linprint(ostr,cdf)` prints linearly spaced points.
+`linprint(io,cdf)` print linearly spaced points.
 
 `rand(cdf)`  return a sample from the empirical probability distribution associated with `cdf`.
 
 `getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`.
 
 Other methods that call a method of the same function on the data are `length`, `minimum`, `maximum`, `mean`, `std`,
-  `quantile`.
+`quantile`.
 
 See the doc strings for more information.
 
