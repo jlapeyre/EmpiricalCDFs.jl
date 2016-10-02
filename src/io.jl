@@ -86,7 +86,7 @@ function read_CDFfile_version_string(io::IO)
     try
         s = readstring(io,nchars)
     catch
-        error("Failed reading version number from CDFfile")
+        error("Failed reading identifying string and version number from CDFfile")
     end
     (filetype,versionstring) = split(s)
     if filetype != "CDFfile"

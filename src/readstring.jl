@@ -1,3 +1,5 @@
+using Compat
+
 #### For reading a string
 
 function readlengthandstring(io::IO)
@@ -8,5 +10,5 @@ end
 function readstring(io::IO,stringlength::Int)
     buf = Array(UInt8,stringlength)
     readbytes!(io,buf)
-    unsafe_string(pointer(buf))    
+@compat  unsafe_string(pointer(buf))    
 end
