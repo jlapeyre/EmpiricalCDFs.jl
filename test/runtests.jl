@@ -31,10 +31,10 @@ indir = joinpath(Pkg.dir("EmpiricalCDFs"), "test")
 infile = joinpath(indir, "paretocdf.bin")
 
 paretocdf = readcdf(infile)
-@test length(paretocdf) == 10^6
+@test length(paretocdf) == 10^5
 
 mleks = EmpiricalCDFs.mleKS(paretocdf)
-@test_approx_eq mleks.alpha 2.0018144538762677
-@test_approx_eq mleks.stderr 0.0010018144538762677
+@test_approx_eq mleks.alpha 1.996866804338394
+@test_approx_eq mleks.stderr 0.0031523696255227455
 mlescan = EmpiricalCDFs.scanmle(paretocdf,15)
-@test_approx_eq mlescan.alpha 2.0015910328886446
+@test_approx_eq mlescan.alpha 1.9967583503268964
