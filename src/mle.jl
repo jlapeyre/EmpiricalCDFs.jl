@@ -1,7 +1,7 @@
 """
     (estimate, stderr) = mle(data::AbstractVector)
 
-Return the maximum liklihood estimate and standard error of the exponent of a power law
+Return the maximum likelihood estimate and standard error of the exponent of a power law
 applied to the sorted vector `data`.
 """
 function mle{T<:AbstractFloat}(data::AbstractVector{T})
@@ -56,7 +56,7 @@ end
 """
     mleKS{T<:AbstractFloat}(data::AbstractVector{T})
 
-Return the maximum liklihood estimate and standard error of the exponent of a power law
+Return the maximum likelihood estimate and standard error of the exponent of a power law
 applied to the sorted vector `data`. Also return the Kolmogorv-Smirnov statistic. Results
 are returned in an instance of type `MLEKS`.
 """
@@ -139,3 +139,5 @@ function _scanmle{T<:AbstractFloat, V <: Integer}(data::AbstractVector{T}, range
     end
     mlescan
 end
+
+#  LocalWords:  Kolmogorv Smirnov
