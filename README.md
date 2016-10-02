@@ -1,5 +1,11 @@
 # EmpiricalCDFs.jl
 
+#[![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
+
+#[![Coverage Status](https://coveralls.io/repos/jlapeyre/EmpiricalCDFs.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
+
+#[![codecov.io](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
+
 Create and print [empirical cummulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function).
 (or "empirical distribution functions" as they are know to probabalists)
 
@@ -70,9 +76,3 @@ up the value of the CDF via `cdf[x]`.
   data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
   is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
   the second method is faster.
-
-#[![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
-
-#[![Coverage Status](https://coveralls.io/repos/jlapeyre/EmpiricalCDFs.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
-
-#[![codecov.io](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)

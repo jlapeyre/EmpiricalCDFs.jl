@@ -10,5 +10,4 @@ julia:
 notifications:
   email: false
 after_success: 
-  - julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("EmpiricalCDFs")); using Coverage; Coveralls.submit(process_folder())'
-  
+  - julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("EmpiricalCDFs")); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(process_folder())'
