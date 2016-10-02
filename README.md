@@ -1,5 +1,5 @@
 # EmpiricalCDFs.jl
-### Empirical cummulative distribution functions
+### Empirical cumulative distribution functions
 
 Linux, OSX: [![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
 
@@ -7,8 +7,8 @@ Linux, OSX: [![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg
 
 [![codecov.io](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
 
-Create and print [empirical cummulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function).
-(or "empirical distribution functions" as they are know to probabalists)
+Create and print [empirical cumulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function)
+(or "empirical distribution functions" as they are know to probabalists).
 
 The main application of this package has been for building empirical CDFs obtained from
 Monte Carlo simulations, in particular for examining the tail. For this purpose, you can
@@ -58,7 +58,7 @@ The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects i
 that operate on `AbstractEmpiricalCDF` also work with `CDFfile`, with the call being passed to the `cdf` field.
 `write(fn::String, cdf, header="")` writes a binary file. See documentation for `readcdf`.
 
-### Maximum liklihood estimate of a power law
+### Maximum likelihood estimate of a power law
 
 Functions for estimating the exponent of a power law are provided.
 See documentation for the following functions, which are not exported: `mle`, `scanmle`, `mleKS`, `KSstatistic`.
@@ -77,3 +77,8 @@ up the value of the CDF via `cdf[x]`.
   data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
   is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
   the second method is faster.
+
+<!-- LocalWords:  EmpiricalCDFs jl OSX codecov io CDFs probabalists CDF eg -->
+<!-- LocalWords:  julia cdf EmpiricalCDF xmin logprint linprint getinverse -->
+<!-- LocalWords:  quantile CDFfile AbstractEmpiricalCDF readcdf mle mleKS -->
+<!-- LocalWords:  scanmle KSstatistic AbstractArrays ecdf StatsBase -->
