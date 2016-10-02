@@ -7,10 +7,6 @@ Linux, OSX: [![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg
 
 [![codecov.io](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
 
-[![EmpiricalCDFs](http://pkg.julialang.org/badges/EmpiricalCDFs_0.4.svg)](http://pkg.julialang.org/?pkg=EmpiricalCDFs&ver=0.4)
-[![EmpiricalCDFs](http://pkg.julialang.org/badges/EmpiricalCDFs_0.5.svg)](http://pkg.julialang.org/?pkg=EmpiricalCDFs&ver=0.5)
-[![EmpiricalCDFs](http://pkg.julialang.org/badges/EmpiricalCDFs_0.6.svg)](http://pkg.julialang.org/?pkg=EmpiricalCDFs&ver=0.6)
-
 Create and print [empirical cummulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function).
 (or "empirical distribution functions" as they are know to probabalists)
 
