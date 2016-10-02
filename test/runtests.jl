@@ -26,3 +26,15 @@ sort!(cdf1)
 
 @test getinverse(cdf0,1-eps(1.0)) == maximum(cdf0)   # last point is as close to 1 as possible
 @test getinverse(cdf1,1-eps(1.0)) == maximum(cdf1)
+
+indir = joinpath(Pkg.dir("EmpiricalCDFs"), "test")
+infile = joinpath(indir, "paretocdf.bin")
+
+paretocdf = readcdf(infile)
+@test length(paretocdf) == 10^6
+
+mleks = EmpiricalCDFs.mleKS(paretocdf)
+@test_approx_eq mleks.alpha 2.0018144538762677
+@test_approx_eq mleks.stderr 0.0010018144538762677
+mlescan = EmpiricalCDFs.scanmle(paretocdf,15)
+@test_approx_eq mlescan.alpha 2.0015910328886446

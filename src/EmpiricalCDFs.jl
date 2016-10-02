@@ -1,8 +1,7 @@
 module EmpiricalCDFs
 
-export EmpiricalCDF, EmpiricalCDFHi, CDFfile, linprint, logprint, getinverse, readcdf
+export EmpiricalCDF, EmpiricalCDFHi, CDFfile, linprint, logprint, getinverse, getcdfindex, readcdf
 export getheader, getversion, getcdf
-
 
 """
     AbstractEmpiricalCDF
@@ -47,10 +46,10 @@ This can be useful when generating too many points to store.
 
 # Documented functions and objects
 
-`getinverse(cdf::EmpiricalCDF,x)`, `linprint(io,cdf,n=2000)`, `logprint(io,cdf,n=2000)`,
+`getinverse(cdf,x)`, `linprint(io,cdf,n=2000)`, `logprint(io,cdf,n=2000)`,
+`getcdfindex(cdf,x)`
 """
 EmpiricalCDF() = EmpiricalCDF(Array(Float64,0))
-
 
 """
     EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
@@ -122,6 +121,12 @@ for f in ( :length, :sort!, :minimum, :maximum, :mean, :std, :quantile )
     end
 end
 
+for f in (:mle, :KSstatistic, :mleKS, :scanmle)
+    @eval begin
+        $(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+    end
+end
+
 function _inverse(cdf::EmpiricalCDF, x)
     ind = floor(Int, _total_counts(cdf)*x) + 1
     cdf.xdata[ind]
@@ -145,8 +150,10 @@ function getinverse(cdf::EmpiricalCDFHi,x)
     _inverse(cdf,x)
 end
 
+getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
+
 #Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
-Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, searchsortedlast(cdf.xdata, x))
+Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
 function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})in
@@ -276,5 +283,6 @@ function _printcdf(io::IOStream, cdf::AbstractEmpiricalCDF, prpts::AbstractArray
 end
 
 include("io.jl")
+include("mle.jl")
 
 end # module

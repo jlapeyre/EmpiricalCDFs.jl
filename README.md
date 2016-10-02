@@ -47,7 +47,16 @@ See the doc strings for more information.
 
 ### `CDFfile` and io
 
-The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects in binary format.
+The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects in binary format. Most functions
+that operate on `AbstractEmpiricalCDF` also work with `CDFfile`, with the call being passed to the `cdf` field.
+`write(fn::String, cdf, header="")` writes a binary file. See documentation for `readcdf`.
+
+### Maximum liklihood estimate of a power law
+
+Functions for estimating the exponent of a power law are provided.
+See documentation for the following functions, which are not exported: `mle`, `scanmle`, `mleKS`, `KSstatistic`.
+These operate on `AbstractArrays` of data. They are also mapped to types `AbstractEmpiricalCDF`
+and `CDFfile`.
 
 ### Comparison with `ecdf`
 
