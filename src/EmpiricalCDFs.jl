@@ -1,11 +1,16 @@
 module EmpiricalCDFs
 
-export EmpiricalCDF, linprint, logprint, getinverse
+export EmpiricalCDF, EmpiricalCDFHi, CDFfile, linprint, logprint, getinverse, readcdf
+export getheader, getversion, getcdf
 
+
+"""
+    AbstractEmpiricalCDF
+
+Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
+"""
 abstract AbstractEmpiricalCDF
 
-# docstring does not work
-"Empirical CDF"
 immutable EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Array{T,1}  # death times
 end
@@ -24,8 +29,6 @@ This can be useful when generating too many points to store.
 
 `print(io,cdf)` or `logprint(io,cdf,n=2000)` print (not more than) `n` log spaced points after sorting the data.
 
-`linprint(io,cdf,n=2000)` print (not more than) `n` linearly spaced points after sorting the data.
-
 `print(io,cdf,a::AbstractArray)`,  `print(cdf,a::AbstractArray, fname::String)`  print cdf at points near those in a.
 
 `push!(cdf,x)`  add a point to `cdf`
@@ -42,23 +45,31 @@ This can be useful when generating too many points to store.
 
 `rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
 
-`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`.
+# Documented functions and objects
+
+`getinverse(cdf::EmpiricalCDF,x)`, `linprint(io,cdf,n=2000)`, `logprint(io,cdf,n=2000)`,
 """
 EmpiricalCDF() = EmpiricalCDF(Array(Float64,0))
 
-# docstring does not work
-doc"Empirical CDF with lower cutoff. That is, keep only the tail."
+
+"""
+    EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
+
+Empirical CDF with lower cutoff. That is, keep only the tail.
+"""
 immutable EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
     lowreject::T  # reject counts smaller than this
     rejectcounts::Array{Int,1}  # how many rejections have we done
     xdata::Array{T,1}  # death times
 end
 
-function EmpiricalCDF(lowreject::Real)
+function EmpiricalCDFHi(lowreject::Real)
     cdf = EmpiricalCDFHi(lowreject, Array(Int,1), Array(Float64,0))
     cdf.rejectcounts[1] = 0
     cdf
 end
+
+EmpiricalCDF(lowreject::Real) =  EmpiricalCDFHi(lowreject)
 
 # Number of points accepted plus number of points rejected
 _total_counts(cdf::EmpiricalCDF) = length(cdf.xdata)
@@ -263,5 +274,7 @@ function _printcdf(io::IOStream, cdf::AbstractEmpiricalCDF, prpts::AbstractArray
     println(io, "# cdf: number of points in cdf: $n")
     _printfull(io,cdf,prpts)
 end
+
+include("io.jl")
 
 end # module

@@ -19,6 +19,8 @@ points, e.g `10^9` or `10^10`, than can be stored in memory.
  cdf = EmpiricalCDF(xmin)
 ```
 
+### Functions
+
 `push!(cdf,x)` add a datum to the cdf.
 
 `append!(cdf,a)` append data to the cdf.
@@ -43,20 +45,24 @@ Other methods that call a method of the same function on the data are `length`, 
 
 See the doc strings for more information.
 
+### `CDFfile` and io
+
+The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects in binary format.
+
 ### Comparison with `ecdf`
 
 This package differs from the  [`ecdf` function](https://statsbasejl.readthedocs.io/en/latest/empirical.html#ecdf)
 from [`StatsBase.jl`](https://github.com/JuliaStats/StatsBase.jl).
 
--`ecdf` takes a sorted vector as input and returns a function that looks up the value of the
-CDF. An instance of `EmpiricalCDF`, `cdf` both stores data, eg via `push!(cdf,x)`, and looks
+- `ecdf` takes a sorted vector as input and returns a function that looks up the value of the
+   CDF. An instance of `EmpiricalCDF`, `cdf` both stores data, eg via `push!(cdf,x)`, and looks
 up the value of the CDF via `cdf[x]`.
 - When computing the CDF at an array of values, `ecdf`, sorts the input and uses and algorithm that scans the
-data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
-is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
-the second method is faster.
+  data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
+  is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
+  the second method is faster.
 
-[![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
+#[![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
 
 #[![Coverage Status](https://coveralls.io/repos/jlapeyre/EmpiricalCDFs.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
 
