@@ -1,6 +1,13 @@
-# EmpiricalCDFs
+# EmpiricalCDFs.jl
 
-Create and print empirical cummulative distribution functions (CDFs)
+Create and print [empirical cummulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function).
+(or "empirical distribution functions" as they are know to probabalists)
+
+The main application of this package has been for building empirical CDFs obtained from
+Monte Carlo simulations, in particular for examining the tail. For this purpose, you can
+specify a lower cutoff; data points below this value will be silently rejected, but the
+resulting CDF will still be properly normalized. This is important when generating more
+points, e.g `10^9` or `10^10`, than can be stored in memory.
 
 ```julia
  cdf = EmpiricalCDF()
@@ -18,7 +25,7 @@ Create and print empirical cummulative distribution functions (CDFs)
 
 `sort!(cdf)` The data must be sorted before calling `cdf[x]`
 
-`cdf[x]` return the value of `cdf` at the point `x`
+`cdf[x]` return the value of `cdf` at the point `x`.
 
 `logprint(io,cdf)` or `print(io,cdf)` print the cdf.
 By default `2000` log-spaced points of `cdf` are printed, unless any samples are `< = 0`, in which case
@@ -35,6 +42,19 @@ Other methods that call a method of the same function on the data are `length`, 
 `quantile`.
 
 See the doc strings for more information.
+
+### Comparison with `ecdf`
+
+This package differs from the  [`ecdf` function](https://statsbasejl.readthedocs.io/en/latest/empirical.html#ecdf)
+from [`StatsBase.jl`](https://github.com/JuliaStats/StatsBase.jl).
+
+-`ecdf` takes a sorted vector as input and returns a function that looks up the value of the
+CDF. An instance of `EmpiricalCDF`, `cdf` both stores data, eg via `push!(cdf,x)`, and looks
+up the value of the CDF via `cdf[x]`.
+- When computing the CDF at an array of values, `ecdf`, sorts the input and uses and algorithm that scans the
+data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
+is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
+the second method is faster.
 
 [![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
 
