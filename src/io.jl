@@ -19,11 +19,11 @@ Binary data file for `AbstractEmpiricalCDF`
 The file format is
 
 - Identifying string
-- `n::Int` number of bytes in the header string
+- `n::Int64` number of bytes in the header string
 - `s::String` The header string
-- `t::Int` Type of `AbstractEmpiricalCDF`, 1 or 2. 1 for `EmpiricalCDF`, 2 for `EmpiricalCDFHi`.
+- `t::Int64` Type of `AbstractEmpiricalCDF`, 1 or 2. 1 for `EmpiricalCDF`, 2 for `EmpiricalCDFHi`.
 - `lowreject::Float64` the lower cutoff, only for `EmpiricalCDFHi`.
-- `npts::Int` number of data points in the CDF
+- `npts::Int64` number of data points in the CDF
 - `npts` data points of type `Float64`
 
 `write(fn::String, cdf::AbstractEmpiricalCDF, header::String="")` write `cdf` to file `fn` with header `header`.
@@ -115,18 +115,18 @@ function Base.write(io::IO,cdff::CDFfile)
 end
 
 function Base.write(io::IO,cdf::EmpiricalCDF)
-    write(io, convert(Int,EmpiricalCDFtype))
+    write(io, convert(Int64,EmpiricalCDFtype))
     _writedata(io,cdf)
 end
 
 function Base.write(io::IO,cdf::EmpiricalCDFHi)
-    write(io, convert(Int,EmpiricalCDFHitype))
+    write(io, convert(Int64,EmpiricalCDFHitype))
     write(io,convert(Float64,cdf.lowreject))
     _writedata(io,cdf)
 end
 
 function _writedata(io::IO,cdf::AbstractEmpiricalCDF)
-    write(io,convert(Int,length(cdf)))
+    write(io,convert(Int64,length(cdf)))
     for x in cdf.xdata
         write(io,x)
     end
@@ -143,7 +143,7 @@ Base.write(fn::String, cdf::AbstractEmpiricalCDF) = write(fn,cdf,"")
 #### Reading CDFfile and CDF
 
 function readcdfdata(io::IO, cdf::AbstractEmpiricalCDF)
-    npts = read(io,Int)
+    npts = read(io,Int64)
     resize!(cdf.xdata,npts)
     for i in 1:npts
         x = read(io,Float64)
@@ -154,7 +154,7 @@ end
 function readcdf(io::IO)
     vn = read_CDFfile_version_string(io)
     header = readlengthandstring(io)
-    cdftype = convert(CDFTYPE,read(io,Int))
+    cdftype = convert(CDFTYPE,read(io,Int64))
     local cdf
     if cdftype == EmpiricalCDFtype
         cdf = EmpiricalCDF()
