@@ -1,6 +1,6 @@
 module EmpiricalCDFs
 
-import Compat: String
+import Compat.String
 
 export EmpiricalCDF, EmpiricalCDFHi, CDFfile, linprint, logprint, getinverse, getcdfindex, readcdf
 export getheader, getversion, getcdf

@@ -151,7 +151,7 @@ getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
-function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})in
+function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
     r = Array(eltype(cdf.xdata), size(v)...)
     for (i,x) in enumerate(v)
         r[i] = cdf[x]
