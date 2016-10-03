@@ -65,9 +65,13 @@ for f in ( :sort!, :push!, :append!, :getindex, :length, :rand, :minimum, :maxim
     @eval Base.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in ( :getinverse, :getcdfindex, :linprint, :logprint,
+for f in ( :getinverse, :getcdfindex,
            :mle, :KSstatistic, :mleKS, :scanmle)
     @eval $(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
+end
+
+for f in (  :linprint, :logprint )
+    @eval $(f)(ioorfile, cdff::CDFfile, args...) = $(f)(ioorfile, cdff.cdf, args...)
 end
 
 ####

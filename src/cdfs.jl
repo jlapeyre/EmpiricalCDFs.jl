@@ -181,19 +181,19 @@ function Base.print(cdf::AbstractEmpiricalCDF,fn::String)
     close(io)
 end
 
-Base.print(io::IOStream, cdf::AbstractEmpiricalCDF) = logprint(io,cdf)
+Base.print(io::IO, cdf::AbstractEmpiricalCDF) = logprint(io,cdf)
 
 "`linprint(io::IO ,cdf::EmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
-linprint(io::IOStream, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,false, 2000)
-linprint(io::IOStream, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = _printcdf(io,cdf,false, nprint_pts)
+linprint(io::IO, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,false, 2000)
+linprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = _printcdf(io,cdf,false, nprint_pts)
 
 "`logprint(io::IO, cdf::EmpiricalCDF, n=2000)` print (not more than) `n` log spaced points after sorting the data."
-logprint(io::IOStream, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = _printcdf(io,cdf,true, nprint_pts)
-logprint(io::IOStream, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,true, 2000)
+logprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = _printcdf(io,cdf,true, nprint_pts)
+logprint(io::IO, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,true, 2000)
 
-Base.print(io::IOStream, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = logprint(io,cdf,nprint_pts)
+Base.print(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = logprint(io,cdf,nprint_pts)
 
-Base.print(io::IOStream, cdf::AbstractEmpiricalCDF, prpts::AbstractArray) = _printcdf(io,cdf,prpts)
+Base.print(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray) = _printcdf(io,cdf,prpts)
 
 function Base.print(cdf::AbstractEmpiricalCDF, prpts::AbstractArray, fname::String)
     io = open(fname,"w")
@@ -201,13 +201,13 @@ function Base.print(cdf::AbstractEmpiricalCDF, prpts::AbstractArray, fname::Stri
     close(io)
 end
 
-function linprint(cdf::AbstractEmpiricalCDF,fn::String)
+function linprint(fn::String, cdf::AbstractEmpiricalCDF)
     io = open(fn,"w")
     linprint(io,cdf)
     close(io)
 end
 
-function logprint(cdf::AbstractEmpiricalCDF,fn::String)
+function logprint(fn::String, cdf::AbstractEmpiricalCDF)
     io = open(fn,"w")
     logprint(io,cdf)
     close(io)
@@ -243,7 +243,7 @@ function _printextraheader(io,cdf::EmpiricalCDFHi)
 end
 
 # Note that we sort in place
-function _printcdf(io::IOStream, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts::Integer)
+function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts::Integer)
     if length(cdf) == 0
         error("Trying to print empty cdf")
     end    
@@ -263,7 +263,7 @@ function _printcdf(io::IOStream, cdf::AbstractEmpiricalCDF, logprint::Bool, npri
 end
 
 # FIXME We need to avoid resorting
-function _printcdf(io::IOStream, cdf::AbstractEmpiricalCDF, prpts::AbstractArray)
+function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray)
     x = cdf.xdata
     sort!(x)
     n = length(x)

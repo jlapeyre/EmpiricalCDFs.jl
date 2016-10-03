@@ -38,3 +38,12 @@ mleks = EmpiricalCDFs.mleKS(paretocdf)
 @test_approx_eq mleks.stderr 0.0031523696255227455
 mlescan = EmpiricalCDFs.scanmle(paretocdf,15)
 @test_approx_eq mlescan.alpha 1.9967583503268964
+
+@test length(paretocdf[[.4,.5,.6]]) == 3
+
+@test (linprint(DevNull,paretocdf) ; true)
+@test (logprint(DevNull,paretocdf); true)
+@test typeof(rand(paretocdf)) <: AbstractFloat
+
+@test (push!(paretocdf, .5) ; true)
+@test (show(paretocdf); true)
