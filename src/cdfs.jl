@@ -117,7 +117,7 @@ function Base.append!(cdf::EmpiricalCDFHi, times)
 end
 
 # Extend base functions
-for f in ( :length, :sort!, :minimum, :maximum, :mean, :std, :quantile )
+for f in ( :length, :minimum, :maximum, :mean, :std, :quantile )
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
     end

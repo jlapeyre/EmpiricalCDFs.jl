@@ -46,4 +46,4 @@ mlescan = EmpiricalCDFs.scanmle(paretocdf,15)
 @test typeof(rand(paretocdf)) <: AbstractFloat
 
 @test (push!(paretocdf, .5) ; true)
-@test (show(paretocdf); true)
+@test (show(DevNull, paretocdf); true)
