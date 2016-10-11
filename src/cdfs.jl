@@ -58,12 +58,18 @@ immutable EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
 end
 
 function EmpiricalCDFHi(lowreject::Real)
-    cdf = EmpiricalCDFHi(lowreject, Array(Int,1), Array(Float64,0))
+    cdf = EmpiricalCDFHi(lowreject, Array(Int,1), Array(typeof(lowreject),0))
     cdf.rejectcounts[1] = 0
     cdf
 end
 
-EmpiricalCDF(lowreject::Real) =  EmpiricalCDFHi(lowreject)
+function EmpiricalCDF(lowreject::Real)
+    if isfinite(lowreject)
+        EmpiricalCDFHi(lowreject)
+    else
+        EmpiricalCDF()
+    end
+end
 
 # Number of points accepted plus number of points rejected
 _total_counts(cdf::EmpiricalCDF) = length(cdf.xdata)
