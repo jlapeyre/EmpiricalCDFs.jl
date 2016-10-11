@@ -116,12 +116,21 @@ function Base.append!(cdf::EmpiricalCDFHi, times)
     cdf
 end
 
+# Extend base functions
 for f in ( :length, :sort!, :minimum, :maximum, :mean, :std, :quantile )
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
     end
 end
 
+# Same as above, but the return value is the cdf
+for f in ( :sort!, )
+    @eval begin
+        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = ($(f)(cdf.xdata,args...); cdf)
+    end
+end
+
+# Wrap our own methods
 for f in (:mle, :KSstatistic, :mleKS, :scanmle)
     @eval begin
         $(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
