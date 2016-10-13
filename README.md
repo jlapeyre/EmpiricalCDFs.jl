@@ -57,7 +57,7 @@ See the doc strings for more information.
 
 The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects in binary format. Most functions
 that operate on `AbstractEmpiricalCDF` also work with `CDFfile`, with the call being passed to the `cdf` field.
-`write(fn::String, cdf, header="")` writes a binary file. See documentation for `readcdf`.
+`saves(fn::String, cdf, header="")` writes a binary file. See documentation for `readcdf`.
 
 ### Maximum likelihood estimate of a power law
 

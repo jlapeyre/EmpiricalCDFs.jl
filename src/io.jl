@@ -26,7 +26,7 @@ The file format is
 - `npts::Int64` number of data points in the CDF
 - `npts` data points of type `Float64`
 
-`write(fn::String, cdf::AbstractEmpiricalCDF, header::String="")` write `cdf` to file `fn` with header `header`.
+`save(fn::String, cdf::AbstractEmpiricalCDF, header::String="")` save `cdf` to file `fn` with header `header`.
 
 ## Documented functions
 
@@ -107,19 +107,19 @@ end
 
 #### Writing CDFfile and CDF
 
-function Base.write(io::IO,cdff::CDFfile)
+function save(io::IO,cdff::CDFfile)
     write(io, make_CDFfile_version_string())
     write(io,sizeof(cdff.header))
     write(io,cdff.header)
-    write(io,cdff.cdf)
+    save(io,cdff.cdf)
 end
 
-function Base.write(io::IO,cdf::EmpiricalCDF)
+function save(io::IO,cdf::EmpiricalCDF)
     write(io, convert(Int64,EmpiricalCDFtype))
     _writedata(io,cdf)
 end
 
-function Base.write(io::IO,cdf::EmpiricalCDFHi)
+function save(io::IO,cdf::EmpiricalCDFHi)
     write(io, convert(Int64,EmpiricalCDFHitype))
     write(io,convert(Float64,cdf.lowreject))
     _writedata(io,cdf)
@@ -132,13 +132,13 @@ function _writedata(io::IO,cdf::AbstractEmpiricalCDF)
     end
 end
 
-function Base.write(fn::String, cdf::AbstractEmpiricalCDF, header::String)
+function save(fn::String, cdf::AbstractEmpiricalCDF, header::String)
     io = open(fn,"w")
-    write(io, CDFfile(cdf,header,CDFfileVersion))
+    save(io, CDFfile(cdf,header,CDFfileVersion))
     close(io)
 end
 
-Base.write(fn::String, cdf::AbstractEmpiricalCDF) = write(fn,cdf,"")
+save(fn::String, cdf::AbstractEmpiricalCDF) = save(fn,cdf,"")
 
 #### Reading CDFfile and CDF
 
