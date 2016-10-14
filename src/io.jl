@@ -40,6 +40,18 @@ end
 
 CDFfile(cdf) = CDFfile(cdf,"",CDFfileVersion)
 
+version(cdff::CDFfile) = cdff.vn
+header(cdff::CDFfile) = cdff.header
+
+function Base.show(io::IO, cdff::CDFfile)
+    print(io, string(typeof(cdff)), "(")
+    show(io,cdff.cdf)
+    print(io, ",")
+    print(io, "v", cdff.vn)
+    print(io, ")")
+    nothing
+end
+
 """
     header::String = getheader(cdff::CDFfile)
 
@@ -152,20 +164,69 @@ function readcdfdata(io::IO, cdf::AbstractEmpiricalCDF)
 end
 
 function readcdf(io::IO)
+    info = readcdfinfo(io)
+    (vn,header) = (info.vn,info.header)
+    cdf = typeof(info) == CDFInfo ?  EmpiricalCDF() : EmpiricalCDFHi(info.lowreject)
+    readcdfdata(io,cdf)
+    CDFfile(cdf,header,vn)
+end
+
+immutable CDFInfo
+    vn::VersionNumber
+    header::String
+    npts::Int
+end
+
+function Base.show(io::IO, i::CDFInfo)
+    print(io,typeof(i),"(")
+    print(io,"length(header)=", length(i.header))
+    print(io,",vn=v", i.vn)
+    print(io,",npts=",i.npts,")")
+end
+
+immutable CDFHiInfo
+    vn::VersionNumber
+    header::String
+    npts::Int
+    lowreject::Float64
+end
+
+function Base.show(io::IO, i::CDFHiInfo)
+    print(io,typeof(i),"(")
+    print(io,"length(header)=", length(i.header))
+    print(io,",vn=v", i.vn)
+    print(io,",npts=",i.npts)
+    print(io,",lowreject=",i.lowreject,")")
+end
+
+function readcdfinfo(io::IO)
     vn = read_CDFfile_version_string(io)
     header = readlengthandstring(io)
     cdftype = convert(CDFTYPE,read(io,Int64))
-    local cdf
+    local lowreject
     if cdftype == EmpiricalCDFtype
-        cdf = EmpiricalCDF()
+        npts = peektype(io,Int64)
+        CDFInfo(vn,header,npts)
     elseif cdftype == EmpiricalCDFHitype
         lowreject = read(io,Float64)
-        cdf = EmpiricalCDFHi(lowreject)
+        npts = peektype(io,Int64)
+        CDFHiInfo(vn,header,npts,lowreject)
     else
         error("Uknown cdf type ", cdftype)
     end
-    readcdfdata(io,cdf)
-    CDFfile(cdf,header,vn)
+end
+
+"""
+    readcdfinfo(fn::String)
+
+return an object containing information about the cdf saved in the binary
+file `fn`. The data itself is not read.
+"""
+function readcdfinfo(fn::String)
+    io = open(fn,"r")
+    info = readcdfinfo(io)
+    close(io)
+    info
 end
 
 """
