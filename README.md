@@ -85,7 +85,7 @@ from [`StatsBase.jl`](https://github.com/JuliaStats/StatsBase.jl).
 - `ecdf` takes a sorted vector as input and returns a function that looks up the value of the
    CDF. An instance of `EmpiricalCDF`, `cdf` both stores data, eg via `push!(cdf,x)`, and looks
 up the value of the CDF via `cdf[x]`.
-- When computing the CDF at an array of values, `ecdf`, sorts the input and uses and algorithm that scans the
+- When computing the CDF at an array of values, `ecdf`, sorts the input and uses an algorithm that scans the
   data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
   is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
   the second method is faster.
