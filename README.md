@@ -27,6 +27,8 @@ points, e.g `10^9` or `10^10`, than can be stored in memory.
  cdf = EmpiricalCDF(xmin)
 ```
 
+`EmpiricalCDFs` is not a registered package.
+
 ### Warning about sorting
 
 Before using the cdf, you must call `sort!(cdf)`. For efficiency data is not sorted as it is inserted.
