@@ -40,8 +40,7 @@ end
 
 CDFfile(cdf) = CDFfile(cdf,"",CDFfileVersion)
 
-version(cdff::CDFfile) = cdff.vn
-header(cdff::CDFfile) = cdff.header
+getdata(cdff::CDFfile) = getdata(cdff.cdf)
 
 function Base.show(io::IO, cdff::CDFfile)
     print(io, string(typeof(cdff)), "(")
@@ -52,12 +51,14 @@ function Base.show(io::IO, cdff::CDFfile)
     nothing
 end
 
+
 """
-    header::String = getheader(cdff::CDFfile)
+    header::String = header(cdff::CDFfile)
 
 Return the header from `cdff`.
 """
-getheader(cdff::CDFfile) = cdff.header
+header(cdff::CDFfile) = cdff.header
+
 
 """
     cdf::AbstractEmpiricalCDF = getcdf(cdff::CDFfile)
@@ -66,19 +67,21 @@ Return the CDF from `cdff`.
 """
 getcdf(cdff::CDFfile) = cdff.cdf
 
+
 """
-    getversion(cdff::CDFfile)
+    version(cdff::CDFfile)
 
 Return the version number of the file format.
 """
-getversion(cdff::CDFfile) = cdff.vn
+version(cdff::CDFfile) = cdff.vn
+
 
 for f in ( :sort!, :push!, :append!, :getindex, :length, :rand, :minimum, :maximum, :mean, :std, :quantile )
     @eval Base.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in ( :getinverse, :getcdfindex,
-           :mle, :KSstatistic, :mleKS, :scanmle)
+for f in ( :getinverse, :getcdfindex )
+#           :mle, :KSstatistic, :mleKS, :scanmle)
     @eval $(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 

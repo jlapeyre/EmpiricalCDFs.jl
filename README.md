@@ -27,6 +27,11 @@ points, e.g `10^9` or `10^10`, than can be stored in memory.
  cdf = EmpiricalCDF(xmin)
 ```
 
+### Warning about sorting
+
+Before using the cdf, you must call `sort!(cdf)`. For efficiency data is not sorted as it is inserted.
+The exception is `print`, which does sort the cdf before printing.
+
 ### Functions
 
 `push!(cdf,x)` add a datum to the cdf.

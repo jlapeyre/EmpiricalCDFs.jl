@@ -9,6 +9,37 @@ immutable EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Array{T,1}  # death times
 end
 
+getdata{T<:AbstractEmpiricalCDF}(cdf::T) = cdf.xdata
+
+# Extend base functions
+for f in ( :length, :minimum, :maximum, :mean, :std, :quantile )
+    @eval begin
+        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+    end
+end
+
+# Same as above, but the return value is the cdf
+for f in ( :sort!, )
+    @eval begin
+        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = ($(f)(cdf.xdata,args...); cdf)
+    end
+end
+
+getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
+
+#Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
+Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
+
+# With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
+function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
+    r = Array(eltype(cdf.xdata), size(v)...)
+    for (i,x) in enumerate(v)
+        r[i] = cdf[x]
+    end
+    r
+end
+
+
 doc"""
 *EmpiricalCDF()*
 
@@ -116,26 +147,13 @@ function Base.append!(cdf::EmpiricalCDFHi, times)
     cdf
 end
 
-# Extend base functions
-for f in ( :length, :minimum, :maximum, :mean, :std, :quantile )
-    @eval begin
-        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
-    end
-end
 
-# Same as above, but the return value is the cdf
-for f in ( :sort!, )
-    @eval begin
-        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = ($(f)(cdf.xdata,args...); cdf)
-    end
-end
-
-# Wrap our own methods
-for f in (:mle, :KSstatistic, :mleKS, :scanmle)
-    @eval begin
-        $(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
-    end
-end
+# Let the user do this by hand
+# for f in (:mle, :KSstatistic, :mleKS, :scanmle)
+#     @eval begin
+#         $(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+#     end
+# end
 
 function _inverse(cdf::EmpiricalCDF, x)
     ind = floor(Int, _total_counts(cdf)*x) + 1
@@ -160,19 +178,6 @@ function getinverse(cdf::EmpiricalCDFHi,x)
     _inverse(cdf,x)
 end
 
-getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
-
-#Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
-Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
-
-# With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
-function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
-    r = Array(eltype(cdf.xdata), size(v)...)
-    for (i,x) in enumerate(v)
-        r[i] = cdf[x]
-    end
-    r
-end
 
 function Base.show(io::IO, cdf::EmpiricalCDF)
     print(io, string(typeof(cdf)))
