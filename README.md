@@ -66,10 +66,14 @@ that operate on `AbstractEmpiricalCDF` also work with `CDFfile`, with the call b
 
 ### Maximum likelihood estimate of a power law
 
+Maximum likelihood is no longer in this package . It has been moved to the package `MLEPower`.
+
+<!--
 Functions for estimating the exponent of a power law are provided.
 See documentation for the following functions, which are not exported: `mle`, `scanmle`, `mleKS`, `KSstatistic`.
 These operate on `AbstractArrays` of data. They are also mapped to types `AbstractEmpiricalCDF`
 and `CDFfile`.
+-->
 
 ### Comparison with `ecdf`
 
