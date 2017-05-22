@@ -1,9 +1,11 @@
+using Compat
+
 """
     AbstractEmpiricalCDF
 
 Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
 """
-abstract AbstractEmpiricalCDF
+@compat abstract type AbstractEmpiricalCDF end
 
 immutable EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Array{T,1}  # death times
@@ -32,7 +34,7 @@ Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfind
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
 function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
-    r = Array(eltype(cdf.xdata), size(v)...)
+    r = Array{eltype(cdf.xdata)}(size(v)...)
     for (i,x) in enumerate(v)
         r[i] = cdf[x]
     end
@@ -75,7 +77,7 @@ This can be useful when generating too many points to store.
 `getinverse(cdf,x)`, `linprint(io,cdf,n=2000)`, `logprint(io,cdf,n=2000)`,
 `getcdfindex(cdf,x)`
 """
-EmpiricalCDF() = EmpiricalCDF(Array(Float64,0))
+EmpiricalCDF() = EmpiricalCDF(Array{Float64}(0))
 
 """
     EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
@@ -89,7 +91,7 @@ immutable EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
 end
 
 function EmpiricalCDFHi(lowreject::Real)
-    cdf = EmpiricalCDFHi(lowreject, Array(Int,1), Array(typeof(lowreject),0))
+    cdf = EmpiricalCDFHi(lowreject, Array{Int}(1), Array{typeof(lowreject)}(0))
     cdf.rejectcounts[1] = 0
     cdf
 end
