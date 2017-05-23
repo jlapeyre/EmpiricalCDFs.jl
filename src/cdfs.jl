@@ -11,9 +11,16 @@ immutable EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Array{T,1}  # death times
 end
 
+"""
+    getdata(cdf::AbstractEmpiricalCDF) = cdf
+
+return the array holding counts for `cdf`.
+"""
 getdata{T<:AbstractEmpiricalCDF}(cdf::T) = cdf.xdata
 
 # Extend base functions
+# TODO: Check that these are doing what we want!
+# We should fix quantile
 for f in ( :length, :minimum, :maximum, :mean, :std, :quantile )
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
@@ -32,7 +39,10 @@ getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 #Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
 Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
+(cdf::EmpiricalCDF)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
+
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
+
 function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
     r = Array{eltype(cdf.xdata)}(size(v)...)
     for (i,x) in enumerate(v)
@@ -89,6 +99,8 @@ immutable EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
     rejectcounts::Array{Int,1}  # how many rejections have we done
     xdata::Array{T,1}  # death times
 end
+
+(cdf::EmpiricalCDFHi)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 function EmpiricalCDFHi(lowreject::Real)
     cdf = EmpiricalCDFHi(lowreject, Array{Int}(1), Array{typeof(lowreject)}(0))

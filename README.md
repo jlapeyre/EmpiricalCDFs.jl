@@ -42,7 +42,10 @@ The exception is `print`, which does sort the cdf before printing.
 
 `sort!(cdf)` The data must be sorted before calling `cdf[x]`
 
-`cdf[x]` return the value of `cdf` at the point `x`.
+`cdf(x)` return the value of `cdf` at the value `x`.
+
+`cdf[x]` (deprecated) return the value of `cdf` at the point `x`. This should do something
+else, like return the data at index `x`.
 
 `logprint(io,cdf)` or `print(io,cdf)` print the cdf.
 By default `2000` log-spaced points of `cdf` are printed, unless any samples are `< = 0`, in which case

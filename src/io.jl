@@ -89,6 +89,8 @@ for f in (  :linprint, :logprint )
     @eval $(f)(ioorfile, cdff::CDFfile, args...) = $(f)(ioorfile, cdff.cdf, args...)
 end
 
+(cdff::CDFfile)(x::Real) = (cdff.cdf)(x)
+
 ####
 
 function make_CDFfile_version_string(v)
