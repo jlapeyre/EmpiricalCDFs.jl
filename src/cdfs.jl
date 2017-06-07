@@ -80,6 +80,10 @@ This can be useful when generating too many points to store.
 
 `length(cdf)`  return the number of data points in `cdf`.
 
+`counts(cdf)`  return number of counts in `cdf`. This includes data that were not stored
+               because they were above the cutoff. In this case, `lenghth(cdf)` is less
+               than `counts(cdf)`
+
 `rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
 
 # Documented functions and objects
@@ -115,6 +119,8 @@ function EmpiricalCDF(lowreject::Real)
         EmpiricalCDF()
     end
 end
+
+counts(cdf::AbstractEmpiricalCDF) = _total_counts(cdf)
 
 # Number of points accepted plus number of points rejected
 _total_counts(cdf::EmpiricalCDF) = length(cdf.xdata)
