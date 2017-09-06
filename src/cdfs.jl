@@ -12,11 +12,11 @@ immutable EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
 end
 
 """
-    getdata(cdf::AbstractEmpiricalCDF) = cdf
+    data(cdf::AbstractEmpiricalCDF) = cdf
 
 return the array holding counts for `cdf`.
 """
-getdata{T<:AbstractEmpiricalCDF}(cdf::T) = cdf.xdata
+data{T<:AbstractEmpiricalCDF}(cdf::T) = cdf.xdata
 
 # Extend base functions
 # TODO: Check that these are doing what we want!
@@ -74,9 +74,7 @@ This can be useful when generating too many points to store.
 
 `sort!(cdf)` The data must be sorted before calling `cdf[x]`
 
-`cdf[x::Real]`  return the value of `cdf` at the point `x`.
-
-`cdf[a::AbstractArray]` return the values of `cdf` at the points in `a`.
+`cdf(x::Real)`  return the value of `cdf` at the point `x`.
 
 `length(cdf)`  return the number of data points in `cdf`.
 
@@ -84,7 +82,7 @@ This can be useful when generating too many points to store.
                because they were above the cutoff. In this case, `lenghth(cdf)` is less
                than `counts(cdf)`
 
-`rand(cdf)`  return a sample from the probability distribution associated with `cdf`.
+`rand(cdf)`  return a sample from the probability distribution approximated by `cdf`.
 
 # Documented functions and objects
 
@@ -120,6 +118,12 @@ function EmpiricalCDF(lowreject::Real)
     end
 end
 
+"""
+    counts(cdf::AbstractEmpiricalCDF)
+
+return the number of counts added to `cdf`. This includes counts
+that may have been discarded because they are outside of the cutoff.
+"""
 counts(cdf::AbstractEmpiricalCDF) = _total_counts(cdf)
 
 # Number of points accepted plus number of points rejected
@@ -134,7 +138,11 @@ _increment_rejectcounts(cdf::EmpiricalCDFHi) = cdf.rejectcounts[1] += 1
 
 _rejectcounts(cdf::EmpiricalCDFHi) = cdf.rejectcounts[1]
 
+"""
+    push!(cdf::EmpiricalCDF,x)
 
+add the sample `x` to `cdf`.
+"""
 Base.push!(cdf::EmpiricalCDF,x) = (push!(cdf.xdata,x) ; cdf)
 
 function _push!(cdf::EmpiricalCDFHi,x)
@@ -167,14 +175,6 @@ function Base.append!(cdf::EmpiricalCDFHi, times)
     cdf
 end
 
-
-# Let the user do this by hand
-# for f in (:mle, :KSstatistic, :mleKS, :scanmle)
-#     @eval begin
-#         $(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
-#     end
-# end
-
 function _inverse(cdf::EmpiricalCDF, x)
     ind = floor(Int, _total_counts(cdf)*x) + 1
     cdf.xdata[ind]
@@ -185,9 +185,17 @@ function _inverse(cdf::EmpiricalCDFHi, x)
     cdf.xdata[ind]
 end
 
+"""
+    rand(cdf::EmpiricalCDF)
+
+Pick a random sample from the distribution represented by `cdf`.
+"""
 Base.rand(cdf::EmpiricalCDF) = _inverse(cdf,rand())
 
-"`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`."
+"""
+    getinverse(cdf::EmpiricalCDF,x)
+return the value of the functional inverse of `cdf` at the point `x`.
+"""
 function getinverse(cdf::EmpiricalCDF,x)
     (x < 0 || x >= 1) && throw(DomainError())
     _inverse(cdf,x)

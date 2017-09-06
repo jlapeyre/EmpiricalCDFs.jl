@@ -40,7 +40,7 @@ end
 
 CDFfile(cdf) = CDFfile(cdf,"",CDFfileVersion)
 
-getdata(cdff::CDFfile) = getdata(cdff.cdf)
+data(cdff::CDFfile) = data(cdff.cdf)
 
 function Base.show(io::IO, cdff::CDFfile)
     print(io, string(typeof(cdff)), "(")
