@@ -80,7 +80,7 @@ for f in ( :sort!, :push!, :append!, :getindex, :length, :rand, :minimum, :maxim
     @eval Base.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in ( :getinverse, :getcdfindex )
+for f in ( :getinverse, :getcdfindex, :counts )
 #           :mle, :KSstatistic, :mleKS, :scanmle)
     @eval $(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
