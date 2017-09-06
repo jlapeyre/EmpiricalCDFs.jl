@@ -14,9 +14,9 @@ end
 """
     data(cdf::AbstractEmpiricalCDF) = cdf
 
-return the array holding counts for `cdf`.
+return the array holding samples for `cdf`.
 """
-data{T<:AbstractEmpiricalCDF}(cdf::T) = cdf.xdata
+data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 
 # Extend base functions
 # TODO: Check that these are doing what we want!
@@ -36,21 +36,30 @@ end
 
 getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 
-#Base.getindex(cdf::EmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x) / length(cdf.xdata)
 Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
-(cdf::EmpiricalCDF)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
-
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
-
-function Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
+function _getinds{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
     r = Array{eltype(cdf.xdata)}(size(v)...)
     for (i,x) in enumerate(v)
-        r[i] = cdf[x]
+        r[i] = cdf(x)
     end
     r
 end
 
+
+# This documentation is inaccesible ?
+"""
+    (cdf::EmpiricalCDF)(x::Real)
+
+return the value of the approximate cummulative distribution function `cdf` at the point `x`.
+"""
+(cdf::EmpiricalCDF)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
+
+(cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf,v)
+
+
+Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
 
 doc"""
 *EmpiricalCDF()*
@@ -139,13 +148,13 @@ _increment_rejectcounts(cdf::EmpiricalCDFHi) = cdf.rejectcounts[1] += 1
 _rejectcounts(cdf::EmpiricalCDFHi) = cdf.rejectcounts[1]
 
 """
-    push!(cdf::EmpiricalCDF,x)
+    push!(cdf::EmpiricalCDF,x::Real)
 
 add the sample `x` to `cdf`.
 """
-Base.push!(cdf::EmpiricalCDF,x) = (push!(cdf.xdata,x) ; cdf)
+Base.push!(cdf::EmpiricalCDF,x::Real) = (push!(cdf.xdata,x) ; cdf)
 
-function _push!(cdf::EmpiricalCDFHi,x)
+function _push!(cdf::EmpiricalCDFHi,x::Real)
     if  x >= cdf.lowreject
         push!(cdf.xdata,x)
     else
@@ -153,7 +162,7 @@ function _push!(cdf::EmpiricalCDFHi,x)
     end
 end
 
-function Base.push!(cdf::EmpiricalCDFHi, x)
+function Base.push!(cdf::EmpiricalCDFHi, x::Real)
     if isinf(cdf.lowreject)
         push!(cdf.xdata,x)
     else
@@ -162,7 +171,12 @@ function Base.push!(cdf::EmpiricalCDFHi, x)
     cdf
 end
 
-Base.append!(cdf::EmpiricalCDF, times) =  (append!(cdf.xdata,times); cdf)
+"""
+    append!(cdf::EmpiricalCDF, a::AbstractArray)
+
+add samples in `a` to `cdf`.
+"""
+Base.append!(cdf::EmpiricalCDF, a::AbstractArray) =  (append!(cdf.xdata,a); cdf)
 
 function Base.append!(cdf::EmpiricalCDFHi, times)
     if  isinf(cdf.lowreject)
@@ -196,12 +210,12 @@ Base.rand(cdf::EmpiricalCDF) = _inverse(cdf,rand())
     getinverse(cdf::EmpiricalCDF,x)
 return the value of the functional inverse of `cdf` at the point `x`.
 """
-function getinverse(cdf::EmpiricalCDF,x)
+function getinverse(cdf::EmpiricalCDF,x::Real)
     (x < 0 || x >= 1) && throw(DomainError())
     _inverse(cdf,x)
 end
 
-function getinverse(cdf::EmpiricalCDFHi,x)
+function getinverse(cdf::EmpiricalCDFHi,x::Real)
     (x < cdf.lowreject || x >= 1) && throw(DomainError())
     _inverse(cdf,x)
 end
@@ -233,13 +247,13 @@ Base.print(io::IO, cdf::AbstractEmpiricalCDF) = logprint(io,cdf)
 
 "`linprint(io::IO ,cdf::EmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
 linprint(io::IO, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,false, 2000)
-linprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = _printcdf(io,cdf,false, nprint_pts)
+linprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = _printcdf(io,cdf,false, nprint_pts)
 
 "`logprint(io::IO, cdf::EmpiricalCDF, n=2000)` print (not more than) `n` log spaced points after sorting the data."
-logprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = _printcdf(io,cdf,true, nprint_pts)
+logprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = _printcdf(io,cdf,true, nprint_pts)
 logprint(io::IO, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,true, 2000)
 
-Base.print(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Int) = logprint(io,cdf,nprint_pts)
+Base.print(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = logprint(io,cdf,nprint_pts)
 
 Base.print(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray) = _printcdf(io,cdf,prpts)
 
