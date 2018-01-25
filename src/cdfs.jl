@@ -245,7 +245,7 @@ end
 
 Base.print(io::IO, cdf::AbstractEmpiricalCDF) = logprint(io,cdf)
 
-"`linprint(io::IO ,cdf::EmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
+"`linprint(io::IO ,cdf::AbstractEmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
 linprint(io::IO, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,false, 2000)
 linprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = _printcdf(io,cdf,false, nprint_pts)
 
@@ -263,15 +263,20 @@ function Base.print(cdf::AbstractEmpiricalCDF, prpts::AbstractArray, fname::Stri
     close(io)
 end
 
-function linprint(fn::String, cdf::AbstractEmpiricalCDF)
+"""
+    linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
+
+print `cdf` to file `fn`. Print no more than 2000 linearly spaced points.
+"""
+function linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
     io = open(fn,"w")
-    linprint(io,cdf)
+    linprint(io,cdf,n)
     close(io)
 end
 
-function logprint(fn::String, cdf::AbstractEmpiricalCDF)
+function logprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
     io = open(fn,"w")
-    logprint(io,cdf)
+    logprint(io,cdf,n)
     close(io)
 end
 
