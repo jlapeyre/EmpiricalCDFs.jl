@@ -246,8 +246,8 @@ end
 Base.print(io::IO, cdf::AbstractEmpiricalCDF) = logprint(io,cdf)
 
 "`linprint(io::IO ,cdf::AbstractEmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
-linprint(io::IO, cdf::AbstractEmpiricalCDF) = _printcdf(io,cdf,false, 2000)
-linprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = _printcdf(io,cdf,false, nprint_pts)
+linprint(io::IO, cdf::AbstractEmpiricalCDF,nprint_pts=2000; lastpt=false) = _printcdf(io,cdf,false,nprint_pts, lastpt=lastpt)
+#linprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = _printcdf(io,cdf,false, nprint_pts)
 
 "`logprint(io::IO, cdf::EmpiricalCDF, n=2000)` print (not more than) `n` log spaced points after sorting the data."
 logprint(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = _printcdf(io,cdf,true, nprint_pts)
@@ -268,9 +268,9 @@ end
 
 print `cdf` to file `fn`. Print no more than 2000 linearly spaced points.
 """
-function linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
+function linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000; lastpt=false)
     io = open(fn,"w")
-    linprint(io,cdf,n)
+    linprint(io,cdf,n; lastpt=lastpt)
     close(io)
 end
 
@@ -281,18 +281,20 @@ function logprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
 end
 
 # print many fields, prpts is iterable
-function _printfull(io, cdf::AbstractEmpiricalCDF, prpts)
+function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     n = length(cdf)
     println(io, "# log10(t)  log10(P(t))  log10(1-P(t))  t  1-P(t)   P(t)")
     state = start(prpts)
-    (p,state) = next(prpts,state)                
-    for i in 1:n-1  # don't print ordinate value of 1
+    (p,state) = next(prpts,state)
+    ulim = lastpt ? n : n - 1 # usually don't print ordinate value of 1
+    println("ulim is ", ulim)
+    for i in 1:ulim  
         xp = cdf.xdata[i]
         if done(prpts,state)
             break
         end
         if xp >= p
-            (p,state) = next(prpts,state)            
+            (p,state) = next(prpts,state)
             cdf_val = _val_at_index(cdf,i)
             @printf(io,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(abs(xp)),  log10(abs(1-cdf_val)), log10(abs(cdf_val)), xp, cdf_val, 1-cdf_val)
         end
@@ -310,12 +312,12 @@ function _printextraheader(io,cdf::EmpiricalCDFHi)
 end
 
 # Note that we sort in place
-function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts::Integer)
+function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts::Integer; lastpt=false)
     if length(cdf) == 0
         error("Trying to print empty cdf")
-    end    
+    end
     x = cdf.xdata
-    sort!(x)    
+    sort!(x)
     xmin = x[1]
     xmax = x[end]
     local prpts
@@ -326,11 +328,11 @@ function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts
         println(io, "# cdf: linear spacing of coordinate")
         prpts = linspace(xmin,xmax, nprint_pts)
     end
-    _printcdf(io, cdf, prpts)    
+    _printcdf(io, cdf, prpts; lastpt=lastpt)
 end
 
 # FIXME We need to avoid resorting
-function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray)
+function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray; lastpt=false)
     x = cdf.xdata
     sort!(x)
     n = length(x)
@@ -341,5 +343,5 @@ function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray)
     println(io, "# cdf: total     counts = ", _total_counts(cdf))
     _printextraheader(io,cdf)
     println(io, "# cdf: number of points in cdf: $n")
-    _printfull(io,cdf,prpts)
+    _printfull(io,cdf,prpts; lastpt=lastpt)
 end
