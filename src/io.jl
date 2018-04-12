@@ -162,7 +162,7 @@ save(fn::String, cdf::AbstractEmpiricalCDF) = save(fn,cdf,"")
 function readcdfdata(io::IO, cdf::AbstractEmpiricalCDF)
     npts = read(io,Int64)
     resize!(cdf.xdata,npts)
-    for i in 1:npts
+@inbounds for i in 1:npts
         x = read(io,Float64)
         cdf.xdata[i] = x
     end
