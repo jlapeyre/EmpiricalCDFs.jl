@@ -15,8 +15,8 @@ Provides [empirical cumulative distribution functions (CDFs)](https://en.wikiped
 It is useful especially for examining the
 tail of the CDF obtained from streaming a large number of data, more than can be stored in memory.
 For this purpose, you specify a lower cutoff; data points below this value will be silently rejected, but the
-resulting CDF will still be properly normalized. One of the main features of *EmpiricalCDFs*
-that is absent in `StatsBase.ecdf` is this ability to process and filter data online.
+resulting CDF will still be properly normalized. This ability to process and filter data online
+is absent in `StatsBase.ecdf`.
 
 ```julia
  cdf = EmpiricalCDF()
