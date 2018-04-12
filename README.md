@@ -24,7 +24,7 @@ is absent in `StatsBase.ecdf`.
  ...
  print(io,cdf)
 
-# reject points `x < xmin` to save memory.
+# reject points `x < xmin` to use less memory
  cdf = EmpiricalCDF(xmin)
 ```
 
