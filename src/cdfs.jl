@@ -8,7 +8,7 @@ Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
 @compat abstract type AbstractEmpiricalCDF end
 
 struct EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
-    xdata::Array{T,1}  # death times
+    xdata::Vector{T}
 end
 
 """
