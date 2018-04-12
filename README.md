@@ -45,9 +45,6 @@ The exception is `print`, which does sort the cdf before printing.
 
 `cdf(x)` evaluate `cdf` at the value `x`.
 
-`cdf[x]` (deprecated) return the value of `cdf` at the point `x`. This should do something
-else, like return the data at index `x`.
-
 `rand(cdf)`  return a sample from the empirical probability distribution associated with `cdf`.
 
 `getinverse(cdf::EmpiricalCDF,c)` return the functional inverse of `cdf` at the value `c`.

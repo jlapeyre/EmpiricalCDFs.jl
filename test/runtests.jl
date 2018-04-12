@@ -42,9 +42,31 @@ paretocdf = readcdf(infile)
 
 @test length(paretocdf.([.4,.5,.6])) == 3
 
+@test getcdf(paretocdf).([.4,.5,.6]) == getcdf(paretocdf)([.4,.5,.6])
+@test paretocdf.([.4,.5,.6]) == paretocdf([.4,.5,.6])
+
 @test (linprint(devnull,paretocdf) ; true)
 @test (logprint(devnull,paretocdf); true)
 @test typeof(rand(paretocdf)) <: AbstractFloat
 
 @test (push!(paretocdf, .5) ; true)
 @test (show(devnull, paretocdf); true)
+
+let
+    p = getcdf(paretocdf)
+    @test data(p) == p.xdata
+    @test counts(p) == length(p)  # TODO remove duplicate functionality
+end
+
+let
+    c = EmpiricalCDF(Inf)
+    c2 = EmpiricalCDF(Inf)
+    @test typeof(c) == typeof(c2)
+    @test length(c) == length(c2)
+end
+
+let
+    c = EmpiricalCDFHi(Inf)
+    @test (push!(c,.5);true)
+    @test (append!(c,[1.,1e10]);true)
+end

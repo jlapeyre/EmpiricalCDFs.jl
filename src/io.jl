@@ -67,7 +67,6 @@ Return the CDF from `cdff`.
 """
 getcdf(cdff::CDFfile) = cdff.cdf
 
-
 """
     version(cdff::CDFfile)
 
@@ -89,7 +88,8 @@ for f in (  :linprint, :logprint )
     @eval $(f)(ioorfile, cdff::CDFfile, args...) = $(f)(ioorfile, cdff.cdf, args...)
 end
 
-(cdff::CDFfile)(x::Real) = (cdff.cdf)(x)
+(cdff::CDFfile)(x::Real) = getcdf(cdff)(x)
+(cdff::CDFfile)(v::AbstractArray) = getcdf(cdff)(v)
 
 ####
 

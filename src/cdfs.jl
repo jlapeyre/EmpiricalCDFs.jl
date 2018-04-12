@@ -36,7 +36,8 @@ end
 
 getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 
-Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
+# getindex is not implemented. It may be used for something in the future
+#Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
 function _getinds{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
@@ -46,7 +47,6 @@ function _getinds{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
     end
     r
 end
-
 
 # This documentation is inaccesible ?
 """
@@ -58,8 +58,7 @@ return the value of the approximate cummulative distribution function `cdf` at t
 
 (cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf,v)
 
-
-Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
+#Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
 
 """
 *EmpiricalCDF()*
