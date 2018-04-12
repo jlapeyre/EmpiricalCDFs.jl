@@ -7,7 +7,7 @@ Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
 """
 @compat abstract type AbstractEmpiricalCDF end
 
-immutable EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
+struct EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Array{T,1}  # death times
 end
 
@@ -61,7 +61,7 @@ return the value of the approximate cummulative distribution function `cdf` at t
 
 Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
 
-doc"""
+"""
 *EmpiricalCDF()*
 
 Return an empirical CDF. The CDF must be sorted after inserting elements with `push!` or
@@ -98,14 +98,14 @@ This can be useful when generating too many points to store.
 `getinverse(cdf,x)`, `linprint(io,cdf,n=2000)`, `logprint(io,cdf,n=2000)`,
 `getcdfindex(cdf,x)`
 """
-EmpiricalCDF() = EmpiricalCDF(Array{Float64}(0))
+EmpiricalCDF() = EmpiricalCDF(Array{Float64}(undef,0))
 
 """
     EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
 
 Empirical CDF with lower cutoff. That is, keep only the tail.
 """
-immutable EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
+struct EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
     lowreject::T  # reject counts smaller than this
     rejectcounts::Array{Int,1}  # how many rejections have we done
     xdata::Array{T,1}  # death times
@@ -114,7 +114,7 @@ end
 (cdf::EmpiricalCDFHi)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 function EmpiricalCDFHi(lowreject::Real)
-    cdf = EmpiricalCDFHi(lowreject, Array{Int}(1), Array{typeof(lowreject)}(0))
+    cdf = EmpiricalCDFHi(lowreject, Array{Int}(undef,1), Array{typeof(lowreject)}(undef,0))
     cdf.rejectcounts[1] = 0
     cdf
 end
@@ -287,7 +287,7 @@ function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     state = start(prpts)
     (p,state) = next(prpts,state)
     ulim = lastpt ? n : n - 1 # usually don't print ordinate value of 1
-    println("ulim is ", ulim)
+#    println("ulim is ", ulim)
     for i in 1:ulim  
         xp = cdf.xdata[i]
         if done(prpts,state)

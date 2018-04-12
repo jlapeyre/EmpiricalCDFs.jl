@@ -1,5 +1,7 @@
 using EmpiricalCDFs
-using Base.Test
+using Compat
+
+using Compat.Test
 
 @test (cdf = EmpiricalCDF(); true)
 @test (cdf = EmpiricalCDF(); append!(cdf,rand(10^3)) ; true)
@@ -27,8 +29,7 @@ sort!(cdf1)
 @test getinverse(cdf0,1-eps(1.0)) == maximum(cdf0)   # last point is as close to 1 as possible
 @test getinverse(cdf1,1-eps(1.0)) == maximum(cdf1)
 
-indir = joinpath(Pkg.dir("EmpiricalCDFs"), "test")
-infile = joinpath(indir, "paretocdf.bin")
+infile = joinpath(@__DIR__, "paretocdf.bin")
 
 paretocdf = readcdf(infile)
 @test length(paretocdf) == 10^5
@@ -41,9 +42,9 @@ paretocdf = readcdf(infile)
 
 @test length(paretocdf.([.4,.5,.6])) == 3
 
-@test (linprint(DevNull,paretocdf) ; true)
-@test (logprint(DevNull,paretocdf); true)
+@test (linprint(devnull,paretocdf) ; true)
+@test (logprint(devnull,paretocdf); true)
 @test typeof(rand(paretocdf)) <: AbstractFloat
 
 @test (push!(paretocdf, .5) ; true)
-@test (show(DevNull, paretocdf); true)
+@test (show(devnull, paretocdf); true)

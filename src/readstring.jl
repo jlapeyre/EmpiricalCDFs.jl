@@ -26,7 +26,7 @@ end
 read  `stringlength` bytes from `io` and return as a string.
 """
 function readstring(io::IO,stringlength::Int64)
-    buf = Array{UInt8}(stringlength)
+    buf = Array{UInt8}(undef,stringlength)
     readbytes!(io,buf)
 @compat  unsafe_string(pointer(buf))
 end

@@ -9,13 +9,14 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jla
 [![codecov.io](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/EmpiricalCDFs.jl?branch=master)
 
 Create and print [empirical cumulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function)
-(or "empirical distribution functions" as they are know to probabalists).
+(or "empirical distribution functions" as they are know to probabalists). The last version to support Julia v0.5 is v0.0.2.
 
-The main application of this package has been for building empirical CDFs obtained from
-Monte Carlo simulations, in particular for examining the tail. For this purpose, you can
-specify a lower cutoff; data points below this value will be silently rejected, but the
-resulting CDF will still be properly normalized. This is important when generating more
-points, e.g `10^9` or `10^10`, than can be stored in memory.
+*EmpiricalCDFs* package implements empirical CDFs; building, evaluating, random sampling, evaluating the inverse, etc.
+It is useful especially for examining the
+tail of the CDF obtained from streaming a large number of data, more than can be stored in memory.
+For this purpose, you specify a lower cutoff; data points below this value will be silently rejected, but the
+resulting CDF will still be properly normalized. One of the main features of *EmpiricalCDFs*
+that is absent in `StatsBase.ecdf` is this ability to process and filter data online.
 
 ```julia
  cdf = EmpiricalCDF()
@@ -36,17 +37,27 @@ The exception is `print`, which does sort the cdf before printing.
 
 ### Functions
 
-`push!(cdf,x)` add a datum to the cdf.
+`push!(cdf,x)` add datum `x` to `cdf`.
 
-`append!(cdf,a)` append data to the cdf.
+`append!(cdf,a)` append data from iterator `a` to the cdf.
 
-`sort!(cdf)` The data must be sorted before calling `cdf[x]`
+`sort!(cdf)` The data must be sorted before calling `cdf(x)`.
 
-`cdf(x)` return the value of `cdf` at the value `x`.
+`cdf(x)` evaluate `cdf` at the value `x`.
 
 `cdf[x]` (deprecated) return the value of `cdf` at the point `x`. This should do something
 else, like return the data at index `x`.
 
+`rand(cdf)`  return a sample from the empirical probability distribution associated with `cdf`.
+
+`getinverse(cdf::EmpiricalCDF,c)` return the functional inverse of `cdf` at the value `c`.
+
+Several existing methods on `AbstractEmpiricalCDF` simply call
+the same funciton on the underlying data. These are:
+`length`, `minimum`, `maximum`, `mean`, `std`,
+`quantile`.
+
+The printing functions are currently skewed to my needs.
 `logprint(io,cdf)` or `print(io,cdf)` print the cdf.
 By default `2000` log-spaced points of `cdf` are printed, unless any samples are `< = 0`, in which case
 they are linearly spaced. Six fields are printed for each coordinate `x`:
@@ -54,31 +65,22 @@ they are linearly spaced. Six fields are printed for each coordinate `x`:
 
 `linprint(io,cdf)` print linearly spaced points.
 
-`rand(cdf)`  return a sample from the empirical probability distribution associated with `cdf`.
-
-`getinverse(cdf::EmpiricalCDF,x)` return the value of the functional inverse of `cdf` at the point `x`.
-
-Other methods that call a method of the same function on the data are `length`, `minimum`, `maximum`, `mean`, `std`,
-`quantile`.
-
 See the doc strings for more information.
 
 ### `CDFfile` and io
 
+I found available serialization choices to be too slow. So, very simple, very fast, binary
+storage and retrieval is provided. By now, or in the future, there will certainly be packages
+that provide a sufficient or better replacement.
+
 The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects in binary format. Most functions
 that operate on `AbstractEmpiricalCDF` also work with `CDFfile`, with the call being passed to the `cdf` field.
+
 `saves(fn::String, cdf, header="")` writes a binary file. See documentation for `readcdf`.
 
 ### Maximum likelihood estimate of a power law
 
 Maximum likelihood is no longer in this package . It has been moved to the package `MLEPower`.
-
-<!--
-Functions for estimating the exponent of a power law are provided.
-See documentation for the following functions, which are not exported: `mle`, `scanmle`, `mleKS`, `KSstatistic`.
-These operate on `AbstractArrays` of data. They are also mapped to types `AbstractEmpiricalCDF`
-and `CDFfile`.
--->
 
 ### Comparison with `ecdf`
 
@@ -86,12 +88,12 @@ This package differs from the  [`ecdf` function](https://statsbasejl.readthedocs
 from [`StatsBase.jl`](https://github.com/JuliaStats/StatsBase.jl).
 
 - `ecdf` takes a sorted vector as input and returns a function that looks up the value of the
-   CDF. An instance of `EmpiricalCDF`, `cdf` both stores data, eg via `push!(cdf,x)`, and looks
-up the value of the CDF via `cdf[x]`.
+   CDF. An instance of `EmpiricalCDF`, `cdf`, both stores data, eg via `push!(cdf,x)`, and looks
+ up the value of the CDF via `cdf(x)`.
 - When computing the CDF at an array of values, `ecdf`, sorts the input and uses an algorithm that scans the
-  data. Instead, `EmpiricalCDF` does a binary search for each element of an input vector. Tests showed that this
+  data. Instead, `EmpiricalCDFs` does a binary search for each element of an input vector. Tests showed that this
   is typically not slower. If the CDF stores a large number of points relative to the size of the input vector,
-  the second method is faster.
+  the second method, the one used by `EmpiricalCDFs` is faster.
 
 <!-- LocalWords:  EmpiricalCDFs jl OSX codecov io CDFs probabalists CDF eg -->
 <!-- LocalWords:  julia cdf EmpiricalCDF xmin logprint linprint getinverse -->

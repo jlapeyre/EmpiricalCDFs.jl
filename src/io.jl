@@ -4,12 +4,12 @@ include("readstring.jl")
 
 @enum CDFTYPE EmpiricalCDFtype=1 EmpiricalCDFHitype=2
 
-const CDFfileVersion = v"0.0.1"
+const CDFfileVersion = v"0.0.2"
 
 """
     CDFfile(cdf::AbstractEmpiricalCDF, header="")
 
-    immutable CDFfile{T <: AbstractEmpiricalCDF}
+    struct CDFfile{T <: AbstractEmpiricalCDF}
         cdf::T
         header::String
     end
@@ -32,7 +32,7 @@ The file format is
 
 `readcdf(fn::String)`
 """
-immutable CDFfile{T <: AbstractEmpiricalCDF}
+struct CDFfile{T <: AbstractEmpiricalCDF}
     cdf::T
     header::String
     vn::VersionNumber
@@ -115,9 +115,9 @@ function read_CDFfile_version_string(io::IO)
     end
     local vn
     try
-        vn = convert(VersionNumber, versionstring)
+        vn = VersionNumber(versionstring)
     catch
-        error("Unable to parses version number string '$versionstring'")
+        error("Unable to parse version number string '$versionstring'")
     end
     vn
 end
@@ -176,7 +176,7 @@ function readcdf(io::IO)
     CDFfile(cdf,header,vn)
 end
 
-immutable CDFInfo
+struct CDFInfo
     vn::VersionNumber
     header::String
     npts::Int
@@ -189,7 +189,7 @@ function Base.show(io::IO, i::CDFInfo)
     print(io,",npts=",i.npts,")")
 end
 
-immutable CDFHiInfo
+struct CDFHiInfo
     vn::VersionNumber
     header::String
     npts::Int
@@ -207,7 +207,7 @@ end
 function readcdfinfo(io::IO)
     vn = read_CDFfile_version_string(io)
     header = readlengthandstring(io)
-    cdftype = convert(CDFTYPE,read(io,Int64))
+    cdftype = CDFTYPE(read(io,Int64))
     local lowreject
     if cdftype == EmpiricalCDFtype
         npts = peektype(io,Int64)
