@@ -43,7 +43,7 @@ getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 function _getinds{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
     r = Array{eltype(cdf.xdata)}(size(v)...)
     for (i,x) in enumerate(v)
-        r[i] = cdf(x)
+        @inbounds r[i] = cdf(x)
     end
     r
 end
@@ -288,7 +288,7 @@ function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     ulim = lastpt ? n : n - 1 # usually don't print ordinate value of 1
 #    println("ulim is ", ulim)
     for i in 1:ulim  
-        xp = cdf.xdata[i]
+        @inbounds xp = cdf.xdata[i]
         if done(prpts,state)
             break
         end
