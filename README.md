@@ -47,7 +47,7 @@ The exception is `print`, which does sort the cdf before printing.
 
 `rand(cdf)`  return a sample from the empirical probability distribution associated with `cdf`.
 
-`getinverse(cdf::EmpiricalCDF,c)` return the functional inverse of `cdf` at the value `c`.
+`finv(cdf::AbstractEmpiricalCDF)(c)` return the functional inverse of `cdf` at the value `c`.
 
 Several existing methods on `AbstractEmpiricalCDF` simply call
 the same funciton on the underlying data. These are:

@@ -26,8 +26,8 @@ sort!(cdf1)
 @test cdf0(.4) != cdf1(.4)
 @test cdf0(.6) == cdf1(.6)
 
-@test getinverse(cdf0,1-eps(1.0)) == maximum(cdf0)   # last point is as close to 1 as possible
-@test getinverse(cdf1,1-eps(1.0)) == maximum(cdf1)
+@test finv(cdf0)(1-eps(1.0)) == maximum(cdf0)   # last point is as close to 1 as possible
+@test finv(cdf1)(1-eps(1.0)) == maximum(cdf1)
 
 infile = joinpath(@__DIR__, "paretocdf.bin")
 

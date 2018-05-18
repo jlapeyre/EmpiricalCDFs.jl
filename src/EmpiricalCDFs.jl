@@ -5,6 +5,7 @@ import Compat.String
 
 # cdfs.jl
 export AbstractEmpiricalCDF, EmpiricalCDF, EmpiricalCDFHi,  linprint, logprint, getinverse, getcdfindex, data, counts
+export finv
 
 # We probably do not want to import or use these in the package. Let the user do it.
 #export mle, KSstatistic, mleKS, scanmle

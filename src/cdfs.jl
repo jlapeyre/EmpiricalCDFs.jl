@@ -206,19 +206,24 @@ Pick a random sample from the distribution represented by `cdf`.
 Base.rand(cdf::EmpiricalCDF) = _inverse(cdf,rand())
 
 """
-    getinverse(cdf::EmpiricalCDF,x)
-return the value of the functional inverse of `cdf` at the point `x`.
+    finv(cdf::AbstractEmpiricalCDF) --> Function
+
+Return the functional inverse of `cdf`. `cdf` is a callable object.
+`finv(cdf)` returns a function that captures `cdf` in a closure.
 """
-function getinverse(cdf::EmpiricalCDF,x::Real)
-    (x < 0 || x >= 1) && throw(DomainError())
-    _inverse(cdf,x)
+function finv(cdf::EmpiricalCDF)
+    function (c::Real)
+        (c < 0 || c >= 1) && throw(DomainError())
+        _inverse(cdf,c)
+    end
 end
 
-function getinverse(cdf::EmpiricalCDFHi,x::Real)
-    (x < cdf.lowreject || x >= 1) && throw(DomainError())
-    _inverse(cdf,x)
+function finv(cdf::EmpiricalCDFHi)
+    function (c::Real)
+        (c < cdf.lowreject || c >= 1) && throw(DomainError())
+        _inverse(cdf,c)
+    end
 end
-
 
 function Base.show(io::IO, cdf::EmpiricalCDF)
     print(io, string(typeof(cdf)))
@@ -287,7 +292,7 @@ function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     (p,state) = next(prpts,state)
     ulim = lastpt ? n : n - 1 # usually don't print ordinate value of 1
 #    println("ulim is ", ulim)
-    for i in 1:ulim  
+    for i in 1:ulim
         @inbounds xp = cdf.xdata[i]
         if done(prpts,state)
             break
@@ -330,7 +335,7 @@ function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts
     _printcdf(io, cdf, prpts; lastpt=lastpt)
 end
 
-# FIXME We need to avoid resorting
+# FIXME: We need to avoid resorting
 function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray; lastpt=false)
     x = cdf.xdata
     sort!(x)
