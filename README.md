@@ -13,7 +13,7 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jla
 Provides [empirical cumulative distribution functions (CDFs)](https://en.wikipedia.org/wiki/Empirical_distribution_function)
 (or "empirical distribution functions" as they are know to probabalists). The last version to support Julia v0.5 is v0.0.2.
 
-Read the documentation here See the documentation [https://jlapeyre.github.io/EmpiricalCDFs.jl/latest](https://jlapeyre.github.io/EmpiricalCDFs.jl/latest).
+See the documentation [https://jlapeyre.github.io/EmpiricalCDFs.jl/latest](https://jlapeyre.github.io/EmpiricalCDFs.jl/latest).
 
 *EmpiricalCDFs* implements empirical CDFs; building, evaluating, random sampling, evaluating the inverse, etc.
 It is useful especially for examining the
