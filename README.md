@@ -2,6 +2,7 @@
 
 *Empirical cumulative distribution functions*
 
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://jlapeyre.github.io/EmpiricalCDFs.jl/latest)
 Linux, OSX: [![Build Status](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl.svg?branch=master)](https://travis-ci.org/jlapeyre/EmpiricalCDFs.jl)
 &nbsp;
 Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jlapeyre/EmpiricalCDFs.jl?branch=master&svg=true)](https://ci.appveyor.com/project/jlapeyre/empiricalcdfs-jl)
