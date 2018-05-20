@@ -210,6 +210,19 @@ Base.rand(cdf::AbstractEmpiricalCDF) = _inverse(cdf,rand())
 
 Return the functional inverse of `cdf`. `cdf` is a callable object.
 `finv(cdf)` returns a function that captures `cdf` in a closure.
+
+The following example begins with `cdf` containing `10^6` samples from
+the unit normal distribution.
+
+```julia-repl
+julia> icdf = finv(cdf);
+julia> icdf(.5)
+-0.00037235611091389375
+julia> icdf(1.0-eps())
+4.601393290425543
+julia> maximum(cdf)
+4.601393290425543
+```
 """
 function finv(cdf::EmpiricalCDF)
     function (c::Real)
