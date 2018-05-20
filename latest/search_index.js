@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "EmpiricalCDFs",
     "title": "EmpiricalCDFs.EmpiricalCDF",
     "category": "type",
-    "text": "EmpiricalCDF()\n\nReturn an empirical CDF. After inserting elements with push! or append!, and before being accessed using any of the functions below, the CDF must be sorted with sort!.\n\nEmpiricalCDF and EmpiricalCDFHi are callable objects.\n\njulia> cdf = EmpiricalCDF();\njulia> append!(cdf,randn(10^6));\njulia> sort!(cdf);\njulia> cdf(0.0)\n0.499876\njulia> cdf(1.0)\n0.840944\njulia> cdf(-1.0)\n0.158494\n\nIn this example, we collected 10^6 sample from the unit normal distribution. About half of the samples are greater than zero. Approximately the same mass is between zero and one as is between zero and minus one.\n\n\n\nEmpiricalCDF(lowreject::Real)\n\nIf lowereject is finite return EmpiricalCDFHi(lowreject). Otherwise return EmpiricalCDF().\n\n\n\n"
+    "text": "EmpiricalCDF()\n\nReturn an empirical CDF. After inserting elements with push! or append!, and before being accessed using any of the functions below, the CDF must be sorted with sort!.\n\nEmpiricalCDF and EmpiricalCDFHi are callable objects.\n\njulia> cdf = EmpiricalCDF();\njulia> append!(cdf,randn(10^6));\njulia> sort!(cdf);\njulia> cdf(0.0)\n0.499876\njulia> cdf(1.0)\n0.840944\njulia> cdf(-1.0)\n0.158494\n\nIn this example, we collected 10^6 samples from the unit normal distribution. About half of the samples are greater than zero. Approximately the same mass is between zero and one as is between zero and minus one.\n\n\n\nEmpiricalCDF(lowreject::Real)\n\nIf lowereject is finite return EmpiricalCDFHi(lowreject). Otherwise return EmpiricalCDF().\n\n\n\n"
 },
 
 {
