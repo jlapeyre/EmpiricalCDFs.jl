@@ -125,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "EmpiricalCDFs",
     "title": "EmpiricalCDFs.finv",
     "category": "function",
-    "text": "finv(cdf::AbstractEmpiricalCDF) --> Function\n\nReturn the functional inverse of cdf. cdf is a callable object. finv(cdf) returns a function that captures cdf in a closure.\n\n\n\n"
+    "text": "finv(cdf::AbstractEmpiricalCDF) --> Function\n\nReturn the functional inverse of cdf. cdf is a callable object. finv(cdf) returns a function that captures cdf in a closure.\n\nThe following example begins with cdf containing 10^6 samples from the unit normal distribution.\n\njulia> icdf = finv(cdf);\njulia> icdf(.5)\n-0.00037235611091389375\njulia> icdf(1.0-eps())\n4.601393290425543\njulia> maximum(cdf)\n4.601393290425543\n\n\n\n"
 },
 
 {
