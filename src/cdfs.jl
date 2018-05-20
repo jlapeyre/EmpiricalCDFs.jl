@@ -7,12 +7,13 @@ Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
 """
 @compat abstract type AbstractEmpiricalCDF end
 
+
 struct EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Vector{T}
 end
 
 """
-    data(cdf::AbstractEmpiricalCDF) = cdf
+    data(cdf::AbstractEmpiricalCDF)
 
 return the array holding samples for `cdf`.
 """
@@ -21,14 +22,21 @@ data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 # Extend base functions
 # TODO: Check that these are doing what we want!
 # We should fix quantile
-for f in ( :length, :minimum, :maximum, :mean, :std, :quantile )
+for f in ( :length, :minimum, :maximum, :extrema, :mean, :median, :std, :quantile )
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
     end
 end
 
 # Same as above, but the return value is the cdf
-for f in ( :sort!, )
+
+@doc """
+    sort!(cdf::AbstractEmpiricalCDF)
+
+Sort the data collected in `cdf`. You must call `sort!` before using `cdf`.
+""" sort!
+
+for f in (:sort!,)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = ($(f)(cdf.xdata,args...); cdf)
     end
@@ -48,54 +56,23 @@ function _getinds{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
     r
 end
 
-# This documentation is inaccesible ?
-"""
-    (cdf::EmpiricalCDF)(x::Real)
-
-return the value of the approximate cummulative distribution function `cdf` at the point `x`.
-"""
 (cdf::EmpiricalCDF)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 (cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf,v)
 
-#Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
+Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
 
 """
-*EmpiricalCDF()*
+    EmpiricalCDF()
 
-Return an empirical CDF. The CDF must be sorted after inserting elements with `push!` or
-`append!`, and before being accessed using any of the functions below.
+Return an empirical CDF. After inserting elements with `push!` or
+`append!`, and before being accessed using any of the functions below, the CDF must be sorted with `sort!`.
 
-`EmpiricalCDF(xmin::Real)`
-
-When using `push!(cdf,x)` and `append!(cdf,a)`, points `x` for `x<xmin` will be rejected.
-The CDF will be properly normalized, but will be lower-truncated.
-This can be useful when generating too many points to store.
-
-`print(io,cdf)` or `logprint(io,cdf,n=2000)` print (not more than) `n` log spaced points after sorting the data.
-
-`print(io,cdf,a::AbstractArray)`,  `print(cdf,a::AbstractArray, fname::String)`  print cdf at points near those in a.
-
-`push!(cdf,x)`  add a point to `cdf`
-
-`append!(cdf,a)`  add points to `cdf`.
-
-`sort!(cdf)` The data must be sorted before calling `cdf[x]`
-
-`cdf(x::Real)`  return the value of `cdf` at the point `x`.
-
-`length(cdf)`  return the number of data points in `cdf`.
-
-`counts(cdf)`  return number of counts in `cdf`. This includes data that were not stored
-               because they were above the cutoff. In this case, `lenghth(cdf)` is less
-               than `counts(cdf)`
-
-`rand(cdf)`  return a sample from the probability distribution approximated by `cdf`.
-
-# Documented functions and objects
-
-`getinverse(cdf,x)`, `linprint(io,cdf,n=2000)`, `logprint(io,cdf,n=2000)`,
-`getcdfindex(cdf,x)`
+`EmpiricalCDF` is a callable object:
+```
+(cdf::EmpiricalCDF)(x::Real)
+```
+returns the value of the approximate cummulative distribution function `cdf` at the point `x`.
 """
 EmpiricalCDF() = EmpiricalCDF(Array{Float64}(undef,0))
 
@@ -112,12 +89,24 @@ end
 
 (cdf::EmpiricalCDFHi)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
+"""
+    EmpiricalCDFHi(lowreject::Real)
+
+Return a CDF that does not store samples whose values are less than `lowreject`. The
+sorted CDF will still be properly normalized.
+"""
 function EmpiricalCDFHi(lowreject::Real)
     cdf = EmpiricalCDFHi(lowreject, Array{Int}(undef,1), Array{typeof(lowreject)}(undef,0))
     cdf.rejectcounts[1] = 0
     cdf
 end
 
+"""
+    EmpiricalCDF(lowreject::Real)
+
+If `lowereject` is finite return `EmpiricalCDFHi(lowreject)`. Otherwise
+return `EmpiricalCDF()`.
+"""
 function EmpiricalCDF(lowreject::Real)
     if isfinite(lowreject)
         EmpiricalCDFHi(lowreject)
@@ -130,7 +119,7 @@ end
     counts(cdf::AbstractEmpiricalCDF)
 
 return the number of counts added to `cdf`. This includes counts
-that may have been discarded because they are outside of the cutoff.
+that may have been discarded because they are below of the cutoff.
 """
 counts(cdf::AbstractEmpiricalCDF) = _total_counts(cdf)
 
@@ -203,7 +192,7 @@ end
 
 Pick a random sample from the distribution represented by `cdf`.
 """
-Base.rand(cdf::EmpiricalCDF) = _inverse(cdf,rand())
+Base.rand(cdf::AbstractEmpiricalCDF) = _inverse(cdf,rand())
 
 """
     finv(cdf::AbstractEmpiricalCDF) --> Function
@@ -247,6 +236,12 @@ function Base.print(cdf::AbstractEmpiricalCDF,fn::String)
     close(io)
 end
 
+@doc """
+    print(io::IO, cdf::AbstractEmpiricalCDF)
+
+Call logprint(io,cdf)
+""" print
+
 Base.print(io::IO, cdf::AbstractEmpiricalCDF) = logprint(io,cdf)
 
 "`linprint(io::IO ,cdf::AbstractEmpiricalCDF, n=2000)` print (not more than) `n` linearly spaced points after sorting the data."
@@ -270,7 +265,7 @@ end
 """
     linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
 
-print `cdf` to file `fn`. Print no more than 2000 linearly spaced points.
+print `cdf` to file `fn`. Print no more than `n` linearly spaced points.
 """
 function linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000; lastpt=false)
     io = open(fn,"w")

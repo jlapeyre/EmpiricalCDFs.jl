@@ -26,11 +26,7 @@ The file format is
 - `npts::Int64` number of data points in the CDF
 - `npts` data points of type `Float64`
 
-`save(fn::String, cdf::AbstractEmpiricalCDF, header::String="")` save `cdf` to file `fn` with header `header`.
 
-## Documented functions
-
-`readcdf(fn::String)`
 """
 struct CDFfile{T <: AbstractEmpiricalCDF}
     cdf::T
@@ -149,13 +145,18 @@ function _writedata(io::IO,cdf::AbstractEmpiricalCDF)
     end
 end
 
-function save(fn::String, cdf::AbstractEmpiricalCDF, header::String)
+"""
+    save(fn::String, cdf::AbstractEmpiricalCDF, header::String="")
+
+write `cdf` to file `fn` in a fast binary format.
+"""
+function save(fn::String, cdf::AbstractEmpiricalCDF, header::String="")
     io = open(fn,"w")
     save(io, CDFfile(cdf,header,CDFfileVersion))
     close(io)
 end
 
-save(fn::String, cdf::AbstractEmpiricalCDF) = save(fn,cdf,"")
+#save(fn::String, cdf::AbstractEmpiricalCDF) = save(fn,cdf,"")
 
 #### Reading CDFfile and CDF
 

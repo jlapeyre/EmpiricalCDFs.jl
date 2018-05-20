@@ -1,7 +1,6 @@
 VERSION >= v"0.4.0-dev+6521" && __precompile__()
 module EmpiricalCDFs
 import Compat.String
-#using MLEPower  No, let the user do this
 
 # cdfs.jl
 export AbstractEmpiricalCDF, EmpiricalCDF, EmpiricalCDFHi,  linprint, logprint, getinverse, getcdfindex, data, counts
