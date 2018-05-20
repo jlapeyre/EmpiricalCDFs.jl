@@ -68,11 +68,22 @@ Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _geti
 Return an empirical CDF. After inserting elements with `push!` or
 `append!`, and before being accessed using any of the functions below, the CDF must be sorted with `sort!`.
 
-`EmpiricalCDF` is a callable object:
+`EmpiricalCDF` and `EmpiricalCDFHi` are callable objects.
+
+```julia-repl
+julia> cdf = EmpiricalCDF();
+julia> append!(cdf,randn(10^6));
+julia> sort!(cdf);
+julia> cdf(0.0)
+0.499876
+julia> cdf(1.0)
+0.840944
+julia> cdf(-1.0)
+0.158494
 ```
-(cdf::EmpiricalCDF)(x::Real)
-```
-returns the value of the approximate cummulative distribution function `cdf` at the point `x`.
+In this example, we collected \$10^6\$ sample from the unit normal distribution. About half of the
+samples are greater than zero. Approximately the same mass is between zero and one as is between
+zero and minus one.
 """
 EmpiricalCDF() = EmpiricalCDF(Array{Float64}(undef,0))
 
