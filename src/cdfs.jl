@@ -81,7 +81,7 @@ julia> cdf(1.0)
 julia> cdf(-1.0)
 0.158494
 ```
-In this example, we collected \$10^6\$ sample from the unit normal distribution. About half of the
+In this example, we collected \$10^6\$ samples from the unit normal distribution. About half of the
 samples are greater than zero. Approximately the same mass is between zero and one as is between
 zero and minus one.
 """
@@ -211,7 +211,7 @@ Base.rand(cdf::AbstractEmpiricalCDF) = _inverse(cdf,rand())
 Return the functional inverse of `cdf`. `cdf` is a callable object.
 `finv(cdf)` returns a function that captures `cdf` in a closure.
 
-The following example begins with `cdf` containing `10^6` samples from
+The following example begins with `cdf` containing \$10^6\$ samples from
 the unit normal distribution.
 
 ```julia-repl
