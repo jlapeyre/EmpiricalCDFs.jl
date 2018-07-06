@@ -16,7 +16,7 @@ end
 function readstring(io::IO,stringlength::Int32)
     buf = Array{UInt8}(convert(Int64,stringlength))
     readbytes!(io,buf)
-@compat  unsafe_string(pointer(buf))
+unsafe_string(pointer(buf))
 end
 
 
@@ -28,7 +28,7 @@ read  `stringlength` bytes from `io` and return as a string.
 function readstring(io::IO,stringlength::Int64)
     buf = Array{UInt8}(undef,stringlength)
     readbytes!(io,buf)
-@compat  unsafe_string(pointer(buf))
+unsafe_string(pointer(buf))
 end
 
 function peektypeold(io::IO, T::DataType)

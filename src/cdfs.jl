@@ -5,7 +5,7 @@ using Compat
 
 Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
 """
-@compat abstract type AbstractEmpiricalCDF end
+abstract type AbstractEmpiricalCDF end
 
 
 struct EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
@@ -48,7 +48,7 @@ getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 #Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
-function _getinds{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T})
+function _getinds(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where T <: Real
     r = Array{eltype(cdf.xdata)}(size(v)...)
     for (i,x) in enumerate(v)
         @inbounds r[i] = cdf(x)
@@ -60,7 +60,7 @@ end
 
 (cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf,v)
 
-Base.getindex{T <: Real}(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) = _getinds(cdf,v)
+Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} = _getinds(cdf,v)
 
 """
     EmpiricalCDF()

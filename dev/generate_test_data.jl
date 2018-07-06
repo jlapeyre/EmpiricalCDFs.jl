@@ -1,6 +1,6 @@
 using EmpiricalCDFs
 
-immutable Pareto
+struct Pareto
     alpha::Float64
     x0::Float64
 end
