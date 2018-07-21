@@ -1,5 +1,3 @@
-using Compat
-
 """
     AbstractEmpiricalCDF
 
@@ -22,9 +20,15 @@ data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 # Extend base functions
 # TODO: Check that these are doing what we want!
 # We should fix quantile
-for f in ( :length, :minimum, :maximum, :extrema, :mean, :median, :std, :quantile )
+for f in (:length, :minimum, :maximum, :extrema)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+    end
+end
+
+for f in (:mean, :median, :std, :quantile)
+    @eval begin
+        Statistics.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
     end
 end
 
@@ -49,16 +53,16 @@ getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
 function _getinds(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where T <: Real
-    r = Array{eltype(cdf.xdata)}(size(v)...)
-    for (i,x) in enumerate(v)
+    r = Array{eltype(cdf.xdata)}(undef, size(v)...)
+    for (i, x) in enumerate(v)
         @inbounds r[i] = cdf(x)
     end
-    r
+    return r
 end
 
 (cdf::EmpiricalCDF)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
-(cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf,v)
+(cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf, v)
 
 Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} = _getinds(cdf,v)
 
@@ -319,7 +323,7 @@ function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
         if xp >= p
             (p,state) = next(prpts,state)
             cdf_val = _val_at_index(cdf,i)
-            @printf(io,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(abs(xp)),  log10(abs(1-cdf_val)), log10(abs(cdf_val)), xp, cdf_val, 1-cdf_val)
+            Printf.@printf(io,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(abs(xp)),  log10(abs(1-cdf_val)), log10(abs(cdf_val)), xp, cdf_val, 1-cdf_val)
         end
     end
 end
@@ -331,7 +335,7 @@ function _printextraheader(io,cdf::EmpiricalCDFHi)
     n = length(cdf)
     println(io, "# cdf: lowreject = ", cdf.lowreject)
     println(io, "# cdf: lowreject counts = ", nreject)
-    @printf(io, "# cdf: fraction kept = %f\n", n/(n+nreject))
+    Printf.@printf(io, "# cdf: fraction kept = %f\n", n/(n+nreject))
 end
 
 # Note that we sort in place
@@ -346,10 +350,10 @@ function _printcdf(io::IO, cdf::AbstractEmpiricalCDF, logprint::Bool, nprint_pts
     local prpts
     if logprint && xmin > 0
         println(io, "# cdf: log spacing of coordinate")
-        prpts = logspace(log10(xmin),log10(xmax), nprint_pts)
+        prpts = 10 .^ range(log10(xmin), stop=log10(xmax), length=nprint_pts)
     else
         println(io, "# cdf: linear spacing of coordinate")
-        prpts = linspace(xmin,xmax, nprint_pts)
+        prpts = range(xmin, stop=xmax, length=nprint_pts)
     end
     _printcdf(io, cdf, prpts; lastpt=lastpt)
 end

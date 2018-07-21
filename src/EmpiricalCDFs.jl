@@ -1,9 +1,11 @@
 __precompile__()
 module EmpiricalCDFs
-import Compat.String
+import Statistics
+import Printf
 
 # cdfs.jl
-export AbstractEmpiricalCDF, EmpiricalCDF, EmpiricalCDFHi,  linprint, logprint, getinverse, getcdfindex, data, counts
+export AbstractEmpiricalCDF, EmpiricalCDF, EmpiricalCDFHi,  linprint, logprint,
+    getinverse, getcdfindex, data, counts
 export finv
 
 # We probably do not want to import or use these in the package. Let the user do it.

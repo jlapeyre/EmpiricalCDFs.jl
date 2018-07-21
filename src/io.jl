@@ -25,8 +25,6 @@ The file format is
 - `lowreject::Float64` the lower cutoff, only for `EmpiricalCDFHi`.
 - `npts::Int64` number of data points in the CDF
 - `npts` data points of type `Float64`
-
-
 """
 struct CDFfile{T <: AbstractEmpiricalCDF}
     cdf::T
@@ -47,14 +45,12 @@ function Base.show(io::IO, cdff::CDFfile)
     nothing
 end
 
-
 """
     header::String = header(cdff::CDFfile)
 
 Return the header from `cdff`.
 """
 header(cdff::CDFfile) = cdff.header
-
 
 """
     cdf::AbstractEmpiricalCDF = getcdf(cdff::CDFfile)
@@ -70,17 +66,20 @@ Return the version number of the file format.
 """
 version(cdff::CDFfile) = cdff.vn
 
-
-for f in ( :sort!, :push!, :append!, :getindex, :length, :rand, :minimum, :maximum, :mean, :std, :quantile )
+for f in (:sort!, :push!, :append!, :getindex, :length, :rand, :minimum, :maximum)
     @eval Base.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in ( :getinverse, :getcdfindex, :counts )
+for f in (:mean, :std, :quantile )
+    @eval Statistics.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
+end
+
+for f in (:getinverse, :getcdfindex, :counts )
 #           :mle, :KSstatistic, :mleKS, :scanmle)
     @eval $(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in (  :linprint, :logprint )
+for f in (:linprint, :logprint )
     @eval $(f)(ioorfile, cdff::CDFfile, args...) = $(f)(ioorfile, cdff.cdf, args...)
 end
 
@@ -225,7 +224,7 @@ end
 """
     readcdfinfo(fn::String)
 
-return an object containing information about the cdf saved in the binary
+Return an object containing information about the cdf saved in the binary
 file `fn`. The data itself is not read.
 """
 function readcdfinfo(fn::String)
