@@ -311,17 +311,18 @@ end
 function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     n = length(cdf)
     println(io, "# log10(t)  log10(P(t))  log10(1-P(t))  t  1-P(t)   P(t)")
-    state = start(prpts)
-    (p,state) = next(prpts,state)
+#    state = start(prpts)
+    (p, state) = iterate(prpts)
     ulim = lastpt ? n : n - 1 # usually don't print ordinate value of 1
 #    println("ulim is ", ulim)
     for i in 1:ulim
         @inbounds xp = cdf.xdata[i]
-        if done(prpts,state)
+        next = iterate(prpts, state)
+        if next == nothing
             break
         end
         if xp >= p
-            (p,state) = next(prpts,state)
+            (p, state) = next
             cdf_val = _val_at_index(cdf,i)
             Printf.@printf(io,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(abs(xp)),  log10(abs(1-cdf_val)), log10(abs(cdf_val)), xp, cdf_val, 1-cdf_val)
         end
