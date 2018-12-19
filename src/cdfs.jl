@@ -5,7 +5,6 @@ Concrete types are `EmpiricalCDF` and `EmpiricalCDFHi`.
 """
 abstract type AbstractEmpiricalCDF end
 
-
 struct EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Vector{T}
 end
@@ -22,13 +21,13 @@ data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 # We should fix quantile
 for f in (:length, :minimum, :maximum, :extrema)
     @eval begin
-        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+        Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = $(f)(cdf.xdata, args...)
     end
 end
 
 for f in (:mean, :median, :std, :quantile)
     @eval begin
-        Statistics.$(f)(cdf::AbstractEmpiricalCDF,args...) = $(f)(cdf.xdata,args...)
+        Statistics.$(f)(cdf::AbstractEmpiricalCDF, args...) = Statistics.$(f)(cdf.xdata,args...)
     end
 end
 
@@ -40,9 +39,9 @@ end
 Sort the data collected in `cdf`. You must call `sort!` before using `cdf`.
 """ sort!
 
-for f in (:sort!,)
+for f in (:sort!, :empty!)
     @eval begin
-        Base.$(f)(cdf::AbstractEmpiricalCDF,args...) = ($(f)(cdf.xdata,args...); cdf)
+        Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = ($(f)(cdf.xdata,args...); cdf)
     end
 end
 
@@ -114,6 +113,12 @@ function EmpiricalCDFHi(lowreject::Real)
     cdf = EmpiricalCDFHi(lowreject, Array{Int}(undef,1), Array{typeof(lowreject)}(undef,0))
     cdf.rejectcounts[1] = 0
     cdf
+end
+
+function Base.empty!(cdfhi::EmpiricalCDFHi)
+    empty!(cdfhi.xdata)
+    cdf.rejectcounts[1] = 0
+    return cdfhi
 end
 
 """
