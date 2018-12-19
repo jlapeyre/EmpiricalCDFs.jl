@@ -18,7 +18,14 @@ normalized. This ability to process and filter data
 
 ```julia
  cdf = EmpiricalCDF()
- push!(cdf,x)
+ append!(cdf, randn(10^5))
+ push!(cdf, randn())
+ sort!(cdf)
+
+ using Statistics
+ mean(cdf)
+ std(cdf)
+
  ...
  print(io,cdf)
 

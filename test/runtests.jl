@@ -1,5 +1,6 @@
 using EmpiricalCDFs
 using Test
+using Statistics
 
 @testset "construction" begin
     @test (cdf = EmpiricalCDF(); true)
@@ -56,4 +57,14 @@ end
     c = EmpiricalCDFHi(Inf)
     @test (push!(c,.5);true)
     @test (append!(c,[1.,1e10]);true)
+end
+
+@testset "statistics" begin
+    n = 10^5
+    cdf = EmpiricalCDF(randn(n))
+    @test length(cdf) == n
+    # named parameters
+    @test std(cdf; mean=mean(cdf)) == std(cdf)
+    empty!(cdf)
+    @test length(cdf) == 0
 end

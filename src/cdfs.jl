@@ -17,17 +17,16 @@ return the array holding samples for `cdf`.
 data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 
 # Extend base functions
-# TODO: Check that these are doing what we want!
-# We should fix quantile
-for f in (:length, :minimum, :maximum, :extrema)
+for f in (:length, :minimum, :maximum, :extrema, :issorted)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = $(f)(cdf.xdata, args...)
     end
 end
 
-for f in (:mean, :median, :std, :quantile)
+# Extend Statistics functions
+for f in (:mean, :median, :middle, :std, :stdm, :var, :varm, :quantile)
     @eval begin
-        Statistics.$(f)(cdf::AbstractEmpiricalCDF, args...) = Statistics.$(f)(cdf.xdata,args...)
+        Statistics.$(f)(cdf::AbstractEmpiricalCDF, args...; kws...) = Statistics.$(f)(cdf.xdata, args...; kws...)
     end
 end
 
@@ -66,10 +65,10 @@ end
 Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} = _getinds(cdf,v)
 
 """
-    EmpiricalCDF()
+    EmpiricalCDF{T=Float64}()
 
-Return an empirical CDF. After inserting elements with `push!` or
-`append!`, and before being accessed using any of the functions below, the CDF must be sorted with `sort!`.
+Construct an empirical CDF. After inserting elements with `push!` or
+`append!`, and before being access using any of the functions below, the CDF must be sorted with `sort!`.
 
 `EmpiricalCDF` and `EmpiricalCDFHi` are callable objects.
 
@@ -88,7 +87,8 @@ In this example, we collected \$10^6\$ samples from the unit normal distribution
 samples are greater than zero. Approximately the same mass is between zero and one as is between
 zero and minus one.
 """
-EmpiricalCDF() = EmpiricalCDF(Array{Float64}(undef,0))
+EmpiricalCDF{T}() where T = EmpiricalCDF{T}(Array{T}(undef,0))
+EmpiricalCDF() = EmpiricalCDF{Float64}()
 
 """
     EmpiricalCDFHi{T <: Real} <: AbstractEmpiricalCDF
@@ -217,12 +217,11 @@ Base.rand(cdf::AbstractEmpiricalCDF) = _inverse(cdf,rand())
 """
     finv(cdf::AbstractEmpiricalCDF) --> Function
 
-Return the functional inverse of `cdf`. `cdf` is a callable object.
-`finv(cdf)` returns a function that captures `cdf` in a closure.
+Return the quantile function, that is, the functional inverse of `cdf`.
+`cdf` is a callable object. Note that finv differs slightly from `quantile`.
 
-The following example begins with `cdf` containing \$10^6\$ samples from
-the unit normal distribution.
-
+### Examples
+Here, `cdf` contains \$10^6\$ samples from the unit normal distribution.
 ```julia-repl
 julia> icdf = finv(cdf);
 julia> icdf(.5)
