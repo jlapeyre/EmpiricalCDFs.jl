@@ -1,4 +1,3 @@
-__precompile__()
 module EmpiricalCDFs
 import Statistics
 import Printf
