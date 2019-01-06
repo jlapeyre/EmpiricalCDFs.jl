@@ -169,11 +169,67 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "#EmpiricalCDFs.IOcdf.CDFfile",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.CDFfile",
+    "category": "type",
+    "text": "CDFfile(cdf::AbstractEmpiricalCDF, header=\"\")\n\nstruct CDFfile{T <: AbstractEmpiricalCDF}\n    cdf::T\n    header::String\nend\n\nBinary data file for AbstractEmpiricalCDF\n\nThe file format is\n\nIdentifying string\nn::Int64 number of bytes in the header string\ns::String The header string\nt::Int64 Type of AbstractEmpiricalCDF, 1 or 2. 1 for EmpiricalCDF, 2 for EmpiricalCDFHi.\nlowreject::Float64 the lower cutoff, only for EmpiricalCDFHi.\nnpts::Int64 number of data points in the CDF\nnpts data points of type Float64\n\n\n\n\n\n"
+},
+
+{
+    "location": "#EmpiricalCDFs.IOcdf.save",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.save",
+    "category": "function",
+    "text": "save(fn::String, cdf::AbstractEmpiricalCDF, header::String=\"\")\n\nwrite cdf to file fn in a fast binary format.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#EmpiricalCDFs.IOcdf.readcdf",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.readcdf",
+    "category": "function",
+    "text": "readcdf(fn::String)\n\nRead an empirical CDF from file fn. Return an object cdff of type CDFfile. The header is in field header. The cdf is in in field cdf.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#EmpiricalCDFs.IOcdf.readcdfinfo",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.readcdfinfo",
+    "category": "function",
+    "text": "readcdfinfo(fn::String)\n\nReturn an object containing information about the cdf saved in the binary file fn. The data itself is not read.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#EmpiricalCDFs.IOcdf.header",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.header",
+    "category": "function",
+    "text": "header::String = header(cdff::CDFfile)\n\nReturn the header from cdff.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#EmpiricalCDFs.IOcdf.getcdf",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.getcdf",
+    "category": "function",
+    "text": "cdf::AbstractEmpiricalCDF = getcdf(cdff::CDFfile)\n\nReturn the CDF from cdff.\n\n\n\n\n\n"
+},
+
+{
+    "location": "#EmpiricalCDFs.IOcdf.version",
+    "page": "EmpiricalCDFs",
+    "title": "EmpiricalCDFs.IOcdf.version",
+    "category": "function",
+    "text": "version(cdff::CDFfile)\n\nReturn the version number of the file format.\n\n\n\n\n\n"
+},
+
+{
     "location": "#Binary-IO-1",
     "page": "EmpiricalCDFs",
     "title": "Binary IO",
     "category": "section",
-    "text": "I found available serialization choices to be too slow. So, very simple, very fast, binary storage and retrieval is provided. By now, or in the future, there will certainly be packages that provide a sufficient or better replacement.The type CDFfile supports reading and writing AbstractEmpiricalCDF objects in binary format. Most functions that operate on AbstractEmpiricalCDF also work with CDFfile, with the call being passed to the cdf field.IOcdf.CDFfile\nIOcdf.save\nIOcdf.readcdf\nIOcdf.readcdfinfo\nIOcdf.header\nIOcdf.getcdf\nIOcdf.version"
+    "text": "I found available serialization choices to be too slow. So, very simple, very fast, binary storage and retrieval is provided. By now, or in the future, there will certainly be packages that provide a sufficient or better replacement.The type CDFfile supports reading and writing AbstractEmpiricalCDF objects in binary format. Most functions that operate on AbstractEmpiricalCDF also work with CDFfile, with the call being passed to the cdf field.EmpiricalCDFs.IOcdf.CDFfile\nEmpiricalCDFs.IOcdf.save\nEmpiricalCDFs.IOcdf.readcdf\nEmpiricalCDFs.IOcdf.readcdfinfo\nEmpiricalCDFs.IOcdf.header\nEmpiricalCDFs.IOcdf.getcdf\nEmpiricalCDFs.IOcdf.version"
 },
 
 {
