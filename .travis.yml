@@ -8,7 +8,17 @@ julia:
   - nightly
 notifications:
   email: false
+# jobs:
+#   include:
+#     - stage: "Documentation"
+#       julia: nightly
+#       os: linux
+#       script:
+#         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+#                                                Pkg.instantiate()'
+#         - julia --project=docs/ docs/make.jl
+#       after_success: skip
 after_success:
-  - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("EmpiricalCDFs")); include(joinpath("docs", "make.jl"))'
-  - julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("EmpiricalCDFs")); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(process_folder())'
+  - julia -e 'using Pkg; Pkg.add("Documenter")'
+  - julia -e 'using Pkg; cd(Pkg.dir("EmpiricalCDFs")); include(joinpath("docs", "make.jl"))'
+  - julia -e 'using Pkg; Pkg.add("Coverage"); cd(Pkg.dir("EmpiricalCDFs")); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(process_folder())'

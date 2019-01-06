@@ -17,7 +17,7 @@ return the array holding samples for `cdf`.
 data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 
 # Extend base functions
-for f in (:length, :minimum, :maximum, :extrema, :issorted, :iterate)
+for f in (:length, :size, :minimum, :maximum, :extrema, :issorted, :iterate)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = $(f)(cdf.xdata, args...)
     end

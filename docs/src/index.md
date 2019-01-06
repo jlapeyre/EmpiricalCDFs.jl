@@ -89,13 +89,13 @@ The type `CDFfile` supports reading and writing `AbstractEmpiricalCDF` objects i
 that operate on `AbstractEmpiricalCDF` also work with `CDFfile`, with the call being passed to the `cdf` field.
 
 ```@docs
-CDFfile
-save
-readcdf
-readcdfinfo
-header
-getcdf
-version
+EmpiricalCDFs.IOcdf.CDFfile
+EmpiricalCDFs.IOcdf.save
+EmpiricalCDFs.IOcdf.readcdf
+EmpiricalCDFs.IOcdf.readcdfinfo
+EmpiricalCDFs.IOcdf.header
+EmpiricalCDFs.IOcdf.getcdf
+EmpiricalCDFs.IOcdf.version
 ```
 
 ## Comparison with `ecdf`
