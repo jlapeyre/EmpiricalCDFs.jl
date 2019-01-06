@@ -1,11 +1,14 @@
 using EmpiricalCDFs
+
+using EmpiricalCDFs.IOcdf: readcdf, getcdf
+
 using Test
 using Statistics
 
 @testset "construction" begin
     @test (cdf = EmpiricalCDF(); true)
     @test (cdf = EmpiricalCDF(); append!(cdf,rand(10^3)) ; true)
-    @test (cdf = EmpiricalCDF(); append!(cdf,rand(10^3)) ; sort!(cdf); typeof(cdf(0)) == Float64)
+    @test (cdf = EmpiricalCDF(); append!(cdf,rand(10^3)) ; sort!(cdf); cdf(0) isa Float64)
     @test (cdf = EmpiricalCDF(); append!(cdf,rand(10^3)) ; sort!(cdf); typeof(rand(cdf)) == Float64)
     @test (cdf = EmpiricalCDF(.5); append!(cdf,rand(10^3)) ; sort!(cdf); typeof(cdf(1)) == Float64)
 end
@@ -39,9 +42,9 @@ end
     @test length(paretocdf.([.4,.5,.6])) == 3
     @test getcdf(paretocdf).([.4,.5,.6]) == getcdf(paretocdf)([.4,.5,.6])
     @test paretocdf.([.4,.5,.6]) == paretocdf([.4,.5,.6])
-    @test (linprint(devnull,paretocdf) ; true)
-    @test (logprint(devnull,paretocdf); true)
-    @test typeof(rand(paretocdf)) <: AbstractFloat
+    @test (linprint(devnull, paretocdf) ; true)
+    @test (logprint(devnull, paretocdf); true)
+    @test rand(paretocdf) isa AbstractFloat
     @test (push!(paretocdf, .5) ; true)
     @test (show(devnull, paretocdf); true)
     p = getcdf(paretocdf)

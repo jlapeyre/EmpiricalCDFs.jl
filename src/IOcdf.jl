@@ -1,3 +1,12 @@
+module IOcdf
+
+export CDFfile, save, readcdf, readcdfinfo, header, version, getcdf, data
+
+import Statistics
+using ..EmpiricalCDFs: AbstractEmpiricalCDF, EmpiricalCDF, EmpiricalCDFHi
+
+import ..EmpiricalCDFs: data, linprint, logprint, getindex, getinverse, getcdfindex, counts
+
 include("readstring.jl")
 
 #### CDFfile type
@@ -247,3 +256,5 @@ function readcdf(fn::String)
     close(io)
     cdffile
 end
+
+end # module IO

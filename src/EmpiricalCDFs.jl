@@ -30,9 +30,11 @@ export finv
 #export mle, KSstatistic, mleKS, scanmle
 
 # io.jl
-export CDFfile, save, readcdf, readcdfinfo, header, version, getcdf, data
+# export CDFfile, save, readcdf, readcdfinfo, header, version, getcdf, data
 
 include("cdfs.jl")
-include("io.jl")
+
+include("IOcdf.jl")
+using .IOcdf
 
 end # module
