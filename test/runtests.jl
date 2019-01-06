@@ -49,7 +49,7 @@ end
     @test (show(devnull, paretocdf); true)
     p = getcdf(paretocdf)
     @test data(p) == p.xdata
-    @test counts(p) == length(p)  # TODO remove duplicate functionality
+    @test counts(p) == length(p)  # NOTE: counts and length are not always the same, but are in this case.
 end
 
 @testset "Inf cutoff" begin

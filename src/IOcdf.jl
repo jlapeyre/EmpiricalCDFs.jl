@@ -1,11 +1,25 @@
 module IOcdf
 
+"""
+    module EmpiricalCDFS.IOcdf
+
+Binary IO functions for `EmpiricalCDFs`.
+
+Types: `CDFfile`
+
+Functions: `save`, `save`, `readcdf`, `readcdfinfo`, `header`, `version`, `getcdf`, `data`
+
+`CDFfile` contains an `AbstractEmpiricalCDF` as a field. Many functions on the latter are forwarded to
+the former.
+"""
+IOcdf
+
 export CDFfile, save, readcdf, readcdfinfo, header, version, getcdf, data
 
 import Statistics
 using ..EmpiricalCDFs: AbstractEmpiricalCDF, EmpiricalCDF, EmpiricalCDFHi
 
-import ..EmpiricalCDFs: data, linprint, logprint, getindex, getinverse, getcdfindex, counts
+import ..EmpiricalCDFs: data, linprint, logprint, getindex, getcdfindex, counts
 
 include("readstring.jl")
 
@@ -83,7 +97,7 @@ for f in (:mean, :std, :quantile )
     @eval Statistics.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in (:getinverse, :getcdfindex, :counts )
+for f in (:getcdfindex, :counts)
 #           :mle, :KSstatistic, :mleKS, :scanmle)
     @eval $(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end

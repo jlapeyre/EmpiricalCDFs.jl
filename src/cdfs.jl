@@ -17,7 +17,7 @@ return the array holding samples for `cdf`.
 data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 
 # Extend base functions
-for f in (:length, :minimum, :maximum, :extrema, :issorted)
+for f in (:length, :minimum, :maximum, :extrema, :issorted, :iterate)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = $(f)(cdf.xdata, args...)
     end
@@ -68,7 +68,7 @@ Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} 
     EmpiricalCDF{T=Float64}()
 
 Construct an empirical CDF. After inserting elements with `push!` or
-`append!`, and before being access using any of the functions below, the CDF must be sorted with `sort!`.
+`append!`, and before using most of the functions below, the CDF must be sorted with `sort!`.
 
 `EmpiricalCDF` and `EmpiricalCDFHi` are callable objects.
 
@@ -138,7 +138,7 @@ end
 """
     counts(cdf::AbstractEmpiricalCDF)
 
-return the number of counts added to `cdf`. This includes counts
+Return the number of counts added to `cdf`. This includes counts
 that may have been discarded because they are below of the cutoff.
 """
 counts(cdf::AbstractEmpiricalCDF) = _total_counts(cdf)
