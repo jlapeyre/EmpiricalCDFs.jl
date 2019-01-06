@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "EmpiricalCDFs",
     "title": "Binary IO",
     "category": "section",
-    "text": "I found available serialization choices to be too slow. So, very simple, very fast, binary storage and retrieval is provided. By now, or in the future, there will certainly be packages that provide a sufficient or better replacement.The type CDFfile supports reading and writing AbstractEmpiricalCDF objects in binary format. Most functions that operate on AbstractEmpiricalCDF also work with CDFfile, with the call being passed to the cdf field.CDFfile\nsave\nreadcdf\nreadcdfinfo\nheader\ngetcdf\nversion"
+    "text": "I found available serialization choices to be too slow. So, very simple, very fast, binary storage and retrieval is provided. By now, or in the future, there will certainly be packages that provide a sufficient or better replacement.The type CDFfile supports reading and writing AbstractEmpiricalCDF objects in binary format. Most functions that operate on AbstractEmpiricalCDF also work with CDFfile, with the call being passed to the cdf field.IOcdf.CDFfile\nIOcdf.save\nIOcdf.readcdf\nIOcdf.readcdfinfo\nIOcdf.header\nIOcdf.getcdf\nIOcdf.version"
 },
 
 {
