@@ -89,7 +89,7 @@ Return the version number of the file format.
 """
 version(cdff::CDFfile) = cdff.vn
 
-for f in (:sort!, :push!, :append!, :getindex, :length, :rand, :minimum, :maximum)
+for f in (:sort!, :push!, :append!, :getindex, :length, :size, :firstindex, :lastindex, :rand, :minimum, :maximum)
     @eval Base.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 

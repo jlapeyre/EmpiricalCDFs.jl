@@ -17,7 +17,7 @@ return the array holding samples for `cdf`.
 data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 
 # Extend base functions
-for f in (:length, :size, :minimum, :maximum, :extrema, :issorted, :iterate)
+for f in (:length, :size, :minimum, :maximum, :extrema, :issorted, :iterate, :getindex, :lastindex, :firstindex)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = $(f)(cdf.xdata, args...)
     end
@@ -46,9 +46,6 @@ end
 
 getcdfindex(cdf::AbstractEmpiricalCDF, x::Real) = searchsortedlast(cdf.xdata, x)
 
-# getindex is not implemented. It may be used for something in the future
-#Base.getindex(cdf::AbstractEmpiricalCDF, x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
-
 # With several tests, this is about the same speed or faster than the routine borrowed from StatsBase
 function _getinds(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where T <: Real
     r = Array{eltype(cdf.xdata)}(undef, size(v)...)
@@ -62,7 +59,8 @@ end
 
 (cdf::EmpiricalCDF)(v::AbstractArray) = _getinds(cdf, v)
 
-Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} = _getinds(cdf,v)
+# This is not done by getindex, but rather by calling the object.
+#Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} = _getinds(cdf,v)
 
 """
     EmpiricalCDF{T=Float64}()
@@ -70,7 +68,9 @@ Base.getindex(cdf::AbstractEmpiricalCDF, v::AbstractArray{T}) where {T <: Real} 
 Construct an empirical CDF. After inserting elements with `push!` or
 `append!`, and before using most of the functions below, the CDF must be sorted with `sort!`.
 
-`EmpiricalCDF` and `EmpiricalCDFHi` are callable objects.
+`EmpiricalCDF` and `EmpiricalCDFHi` are callable objects. For `cdf::AbstractEmpiricalCDF`,
+`cdf(x)` returns the estimate of the CDF at `x`. By contrast, `cdf[inds]` indexes into the underlying
+data array.
 
 ```julia-repl
 julia> cdf = EmpiricalCDF();
