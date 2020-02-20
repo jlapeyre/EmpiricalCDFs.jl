@@ -1,6 +1,6 @@
 name = "EmpiricalCDFs"
-uuid = "8c59bae6-5410-11ea-0770-21e7a53f514f"
-version = "0.2.1"
+uuid = "0dcf7749-4f9f-5e13-9c57-506664207bbc"
+version = "0.2.2"
 license= "MIT"
 
 [deps]

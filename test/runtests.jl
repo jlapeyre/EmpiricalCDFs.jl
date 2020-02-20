@@ -13,6 +13,19 @@ using Statistics
     @test (cdf = EmpiricalCDF(.5); append!(cdf,rand(10^3)) ; sort!(cdf); typeof(cdf(1)) == Float64)
 end
 
+@testset "copy, equality" begin
+    cdf = EmpiricalCDF()
+    append!(cdf, rand(10^3))
+    cdf2 = copy(cdf)
+    @test cdf == cdf2
+
+    cdfh = EmpiricalCDFHi(0.0)
+    append!(cdfh, randn(10^4))
+    cdfh2 = EmpiricalCDFHi(0.0)
+    append!(cdfh2, cdfh)
+    @test cdfh2 == cdfh
+end
+
 @testset "cutoff" begin
     a = rand(10^5);            # points in [0,1)
     cdf0 = EmpiricalCDF();     # accept all points

@@ -9,6 +9,9 @@ struct EmpiricalCDF{T <: Real} <: AbstractEmpiricalCDF
     xdata::Vector{T}
 end
 
+Base.:(==)(cdf1::EmpiricalCDF, cdf2::EmpiricalCDF) = cdf1.xdata == cdf2.xdata
+Base.copy(cdf::EmpiricalCDF) = EmpiricalCDF(copy(cdf.xdata))
+
 """
     data(cdf::AbstractEmpiricalCDF)
 
@@ -103,6 +106,11 @@ end
 
 (cdf::EmpiricalCDFHi)(x::Real) = _val_at_index(cdf, getcdfindex(cdf, x))
 
+Base.:(==)(cdf1::EmpiricalCDFHi, cdf2::EmpiricalCDFHi) = cdf1.lowreject == cdf2.lowreject &&
+    cdf1.rejectcounts == cdf2.rejectcounts && cdf1.xdata == cdf2.xdata
+
+Base.copy(cdf::EmpiricalCDFHi) = EmpiricalCDFHi(cdf.lowreject, copy(cdf.rejectcounts), copy(cdf.xdata))
+
 """
     EmpiricalCDFHi(lowreject::Real)
 
@@ -124,7 +132,7 @@ end
 """
     EmpiricalCDF(lowreject::Real)
 
-If `lowereject` is finite return `EmpiricalCDFHi(lowreject)`. Otherwise
+If `lowreject` is finite return `EmpiricalCDFHi(lowreject)`. Otherwise
 return `EmpiricalCDF()`.
 """
 function EmpiricalCDF(lowreject::Real)
@@ -153,6 +161,8 @@ _val_at_index(cdf::EmpiricalCDFHi, i) =  (i+ _rejectcounts(cdf) )/_total_counts(
 
 _increment_rejectcounts(cdf::EmpiricalCDFHi) = cdf.rejectcounts[1] += 1
 
+_addto_rejectcounts(cdf::EmpiricalCDFHi, n) = cdf.rejectcounts[1] += n
+
 _rejectcounts(cdf::EmpiricalCDFHi) = cdf.rejectcounts[1]
 
 """
@@ -179,16 +189,25 @@ function Base.push!(cdf::EmpiricalCDFHi, x::Real)
     cdf
 end
 
+Base.append!(cdf_to::EmpiricalCDF, cdf_from::AbstractEmpiricalCDF) = append!(cdf_to, cdf_from.xdata)
+
+function Base.append!(cdf_to::EmpiricalCDFHi, cdf_from::AbstractEmpiricalCDF)
+    append!(cdf_to, cdf_from.xdata)
+    _addto_rejectcounts(cdf_to, _rejectcounts(cdf_from))
+    return cdf_to
+end
+
 """
     append!(cdf::EmpiricalCDF, a::AbstractArray)
+    append!(cdf_to::AbstractEmpiricalCDF, cdf_from::AbstractEmpiricalCDF)
 
-add samples in `a` to `cdf`.
+Add samples in `a` to `cdf`. Add samples in `cdf_from` to `cdf_to`.
 """
-Base.append!(cdf::EmpiricalCDF, a::AbstractArray) =  (append!(cdf.xdata,a); cdf)
+Base.append!(cdf::EmpiricalCDF, a::AbstractArray) =  (append!(cdf.xdata, a); cdf)
 
 function Base.append!(cdf::EmpiricalCDFHi, times)
     if  isinf(cdf.lowreject)
-        append!(cdf.xdata,times)
+        append!(cdf.xdata, times)
     else
         for x in times
             _push!(cdf,x)
@@ -315,10 +334,8 @@ end
 function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     n = length(cdf)
     println(io, "# log10(t)  log10(P(t))  log10(1-P(t))  t  1-P(t)   P(t)")
-#    state = start(prpts)
     (p, state) = iterate(prpts)
     ulim = lastpt ? n : n - 1 # usually don't print ordinate value of 1
-#    println("ulim is ", ulim)
     for i in 1:ulim
         @inbounds xp = cdf.xdata[i]
         next = iterate(prpts, state)
