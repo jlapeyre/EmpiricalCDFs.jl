@@ -150,18 +150,18 @@ function save(io::IO,cdff::CDFfile)
 end
 
 function save(io::IO,cdf::EmpiricalCDF)
-    write(io, convert(Int64,EmpiricalCDFtype))
+    write(io, Int64(EmpiricalCDFtype))
     _writedata(io,cdf)
 end
 
 function save(io::IO,cdf::EmpiricalCDFHi)
-    write(io, convert(Int64,EmpiricalCDFHitype))
-    write(io,convert(Float64,cdf.lowreject))
-    _writedata(io,cdf)
+    write(io, Int64(EmpiricalCDFHitype))
+    write(io, convert(Float64, cdf.lowreject))
+    _writedata(io, cdf)
 end
 
 function _writedata(io::IO,cdf::AbstractEmpiricalCDF)
-    write(io,convert(Int64,length(cdf)))
+    write(io, convert(Int64, length(cdf)))
     for x in cdf.xdata
         write(io,x)
     end
