@@ -125,7 +125,7 @@ end
 
 function Base.empty!(cdfhi::EmpiricalCDFHi)
     empty!(cdfhi.xdata)
-    cdf.rejectcounts[1] = 0
+    cdfhi.rejectcounts[1] = 0
     return cdfhi
 end
 
@@ -350,9 +350,9 @@ function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     end
 end
 
-function _printextraheader(io,cdf::AbstractEmpiricalCDF)
+function _printextraheader(io::IO, cdf::AbstractEmpiricalCDF)
 end
-function _printextraheader(io,cdf::EmpiricalCDFHi)
+function _printextraheader(io::IO, cdf::EmpiricalCDFHi)
     nreject = _rejectcounts(cdf)
     n = length(cdf)
     println(io, "# cdf: lowreject = ", cdf.lowreject)

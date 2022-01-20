@@ -113,7 +113,7 @@ end
 
 function make_CDFfile_version_string(v)
     nchars = 100
-    s = "CDFfile " * string(v)
+    s::String = "CDFfile " * string(v)
     s = s * " "^(nchars-length(s))
 end
 
@@ -182,21 +182,21 @@ end
 
 #### Reading CDFfile and CDF
 
-function readcdfdata(io::IO, cdf::AbstractEmpiricalCDF)
+function readcdfdata!(io::IO, cdf::AbstractEmpiricalCDF)
     npts = read(io,Int64)
     resize!(cdf.xdata,npts)
 @inbounds for i in 1:npts
-        x = read(io,Float64)
+        x = read(io, Float64)
         cdf.xdata[i] = x
     end
 end
 
 function readcdf(io::IO)
     info = readcdfinfo(io)
-    (vn,header) = (info.vn,info.header)
+    (vn, header) = (info.vn, info.header)
     cdf = typeof(info) == CDFInfo ?  EmpiricalCDF() : EmpiricalCDFHi(info.lowreject)
-    readcdfdata(io,cdf)
-    CDFfile(cdf,header,vn)
+    readcdfdata!(io, cdf)
+    return CDFfile(cdf, header, vn)
 end
 
 struct CDFInfo
@@ -234,11 +234,11 @@ function readcdfinfo(io::IO)
     local lowreject
     if cdftype == EmpiricalCDFtype
         npts = peektype(io,Int64)
-        CDFInfo(vn,header,npts)
+        return CDFInfo(vn,header,npts)
     elseif cdftype == EmpiricalCDFHitype
         lowreject = read(io,Float64)
         npts = peektype(io,Int64)
-        CDFHiInfo(vn,header,npts,lowreject)
+        return CDFHiInfo(vn,header,npts,lowreject)
     else
         error("Uknown cdf type ", cdftype)
     end
@@ -254,7 +254,7 @@ function readcdfinfo(fn::String)
     io = open(fn,"r")
     info = readcdfinfo(io)
     close(io)
-    info
+    return info
 end
 
 """
@@ -268,7 +268,7 @@ function readcdf(fn::String)
     io = open(fn,"r")
     cdffile = readcdf(io)
     close(io)
-    cdffile
+    return cdffile
 end
 
-end # module IO
+end # module IOcdf
