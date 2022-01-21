@@ -281,7 +281,7 @@ function Base.show(io::IO, cdf::EmpiricalCDFHi)
     print(io,')')
 end
 
-function Base.print(cdf::AbstractEmpiricalCDF,fn::String)
+function Base.print(cdf::AbstractEmpiricalCDF, fn::AbstractString)
     io = open(fn,"w")
     print(io,cdf)
     close(io)
@@ -307,31 +307,31 @@ Base.print(io::IO, cdf::AbstractEmpiricalCDF, nprint_pts::Integer) = logprint(io
 
 Base.print(io::IO, cdf::AbstractEmpiricalCDF, prpts::AbstractArray) = _printcdf(io,cdf,prpts)
 
-function Base.print(cdf::AbstractEmpiricalCDF, prpts::AbstractArray, fname::String)
+function Base.print(cdf::AbstractEmpiricalCDF, prpts::AbstractArray, fname::AbstractString)
     io = open(fname,"w")
-    print(io,cdf,prpts)
+    print(io, cdf,prpts)
     close(io)
 end
 
 """
-    linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
+    linprint(fn::AbstractString, cdf::AbstractEmpiricalCDF, n=2000)
 
 print `cdf` to file `fn`. Print no more than `n` linearly spaced points.
 """
-function linprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000; lastpt=false)
+function linprint(fn::AbstractString, cdf::AbstractEmpiricalCDF, n=2000; lastpt=false)
     io = open(fn,"w")
     linprint(io,cdf,n; lastpt=lastpt)
     close(io)
 end
 
-function logprint(fn::String, cdf::AbstractEmpiricalCDF, n=2000)
+function logprint(fn::AbstractString, cdf::AbstractEmpiricalCDF, n=2000)
     io = open(fn,"w")
     logprint(io,cdf,n)
     close(io)
 end
 
 # print many fields, prpts is iterable
-function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
+function _printfull(io::IO, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     n = length(cdf)
     println(io, "# log10(t)  log10(P(t))  log10(1-P(t))  t  1-P(t)   P(t)")
     (p, state) = iterate(prpts)
@@ -339,13 +339,13 @@ function _printfull(io, cdf::AbstractEmpiricalCDF, prpts; lastpt=false)
     for i in 1:ulim
         @inbounds xp = cdf.xdata[i]
         next = iterate(prpts, state)
-        if next == nothing
+        if next === nothing
             break
         end
         if xp >= p
             (p, state) = next
             cdf_val = _val_at_index(cdf,i)
-            Printf.@printf(io,"%e\t%e\t%e\t%e\t%e\t%e\n", log10(abs(xp)),  log10(abs(1-cdf_val)), log10(abs(cdf_val)), xp, cdf_val, 1-cdf_val)
+            Printf.@printf(io, "%e\t%e\t%e\t%e\t%e\t%e\n", log10(abs(xp)),  log10(abs(1-cdf_val)), log10(abs(cdf_val)), xp, cdf_val, 1-cdf_val)
         end
     end
 end

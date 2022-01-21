@@ -168,11 +168,11 @@ function _writedata(io::IO,cdf::AbstractEmpiricalCDF)
 end
 
 """
-    save(fn::String, cdf::AbstractEmpiricalCDF, header::String="")
+    save(fn::AbstractString, cdf::AbstractEmpiricalCDF, header::String="")
 
 write `cdf` to file `fn` in a fast binary format.
 """
-function save(fn::String, cdf::AbstractEmpiricalCDF, header::String="")
+function save(fn::AbstractString, cdf::AbstractEmpiricalCDF, header::String="")
     io = open(fn,"w")
     save(io, CDFfile(cdf,header,CDFfileVersion))
     close(io)
@@ -194,7 +194,7 @@ end
 function readcdf(io::IO)
     info = readcdfinfo(io)
     (vn, header) = (info.vn, info.header)
-    cdf = typeof(info) == CDFInfo ?  EmpiricalCDF() : EmpiricalCDFHi(info.lowreject)
+    cdf = isa(info, CDFInfo) ?  EmpiricalCDF() : EmpiricalCDFHi(info.lowreject)
     readcdfdata!(io, cdf)
     return CDFfile(cdf, header, vn)
 end
@@ -245,12 +245,12 @@ function readcdfinfo(io::IO)
 end
 
 """
-    readcdfinfo(fn::String)
+    readcdfinfo(fn::AbstractString)
 
 Return an object containing information about the cdf saved in the binary
 file `fn`. The data itself is not read.
 """
-function readcdfinfo(fn::String)
+function readcdfinfo(fn::AbstractString)
     io = open(fn,"r")
     info = readcdfinfo(io)
     close(io)
@@ -258,14 +258,14 @@ function readcdfinfo(fn::String)
 end
 
 """
-    readcdf(fn::String)
+    readcdf(fn::AbstractString)
 
 Read an empirical CDF from file `fn`. Return an object
 `cdff` of type `CDFfile`. The header is in field `header`.
 The cdf is in in field `cdf`.
 """
-function readcdf(fn::String)
-    io = open(fn,"r")
+function readcdf(fn::AbstractString)
+    io = open(fn, "r")
     cdffile = readcdf(io)
     close(io)
     return cdffile
