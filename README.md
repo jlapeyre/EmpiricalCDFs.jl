@@ -15,9 +15,9 @@ Provides [empirical cumulative distribution functions (CDFs)](https://en.wikiped
 
 See the documentation [https://jlapeyre.github.io/EmpiricalCDFs.jl/latest](https://jlapeyre.github.io/EmpiricalCDFs.jl/latest).
 
-I'm surprised that this module is not more popular (if stars are a good measure) because it's rather generic,
+~~I'm surprised that this module is not more popular (if stars are a good measure) because it's rather generic,
 I use it frequently for new projects,
-and the functionality is not available elsewhere.
+and the functionality is not available elsewhere.~~ In the meantime it's gained some stars.
 
 *EmpiricalCDFs* implements empirical CDFs; building, evaluating, random sampling, evaluating the inverse, etc.
 It is useful especially for examining the
