@@ -1,17 +1,26 @@
 name = "EmpiricalCDFs"
 uuid = "0dcf7749-4f9f-5e13-9c57-506664207bbc"
+license = "MIT"
 version = "0.2.2"
-license= "MIT"
 
 [deps]
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
+Aqua = ">= 0.8"
+JET = ">= 0.0"
+Printf = ">= 0.0"
+Random = ">= 0.0"
+Statistics = "1"
+Test = ">= 0.0"
 julia = "1"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Test", "Aqua", "JET"]

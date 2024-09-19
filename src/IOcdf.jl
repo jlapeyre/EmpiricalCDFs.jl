@@ -89,13 +89,35 @@ Return the version number of the file format.
 """
 version(cdff::CDFfile) = cdff.vn
 
-for f in (:sort!, :push!, :append!, :getindex, :length, :size, :firstindex, :lastindex, :rand, :minimum, :maximum)
+for f in (:sort!, :push!, :append!, :getindex, :length, :size, :firstindex, :lastindex)
     @eval Base.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
 
-for f in (:mean, :std, :quantile )
+import Random
+for f in (:rand,)
+    @eval Base.$(f)(cdff::CDFfile) = $(f)(cdff.cdf)
+    @eval Base.$(f)(X::Random.AbstractRNG, cdff::CDFfile) = $(f)(X, cdff.cdf)
+end
+
+for f in (:extrema, :maximum, :minimum)
+    @eval begin
+        Base.$(f)(cdf::CDFfile; kws...) = $(f)(cdf.cdf; kws...)
+        Base.$(f)(func, cdf::CDFfile; kws...) = $(f)(func, cdf.cdf; kws...)
+    end
+end
+
+
+for f in (:std, :quantile )
     @eval Statistics.$(f)(cdff::CDFfile, args...) = $(f)(cdff.cdf, args...)
 end
+
+for f in (:mean,)
+    @eval begin
+        Statistics.$(f)(cdf::CDFfile; kws...) = Statistics.$(f)(cdf.cdf; kws...)
+        Statistics.$(f)(func, cdf::CDFfile; kws...) = Statistics.$(f)(func, cdf.cdf; kws...)
+    end
+end
+
 
 for f in (:getcdfindex, :counts)
 #           :mle, :KSstatistic, :mleKS, :scanmle)
@@ -111,7 +133,7 @@ end
 
 ####
 
-function make_CDFfile_version_string(v)
+function make_CDFfile_version_string(v::VersionNumber)
     nchars = 100
     s::String = "CDFfile " * string(v)
     s = s * " "^(nchars-length(s))

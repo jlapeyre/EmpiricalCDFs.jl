@@ -5,6 +5,14 @@ using EmpiricalCDFs.IOcdf: readcdf, getcdf
 using Test
 using Statistics
 
+include("aqua_test.jl")
+
+if VERSION >= v"1.7" && VERSION <= v"1.11"
+    @testset "JET" begin
+        include("jet_test.jl")
+    end
+end
+
 @testset "construction" begin
     @test (cdf = EmpiricalCDF(); true)
     @test (cdf = EmpiricalCDF(); append!(cdf,rand(10^3)) ; true)
