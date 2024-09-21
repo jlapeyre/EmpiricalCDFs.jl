@@ -20,16 +20,34 @@ return the array holding samples for `cdf`.
 data(cdf::AbstractEmpiricalCDF) = cdf.xdata
 
 # Extend base functions
-for f in (:length, :size, :minimum, :maximum, :extrema, :issorted, :iterate, :getindex, :lastindex, :firstindex)
+for f in (:length, :size, :issorted, :iterate, :getindex, :lastindex, :firstindex)
     @eval begin
         Base.$(f)(cdf::AbstractEmpiricalCDF, args...) = $(f)(cdf.xdata, args...)
     end
 end
 
+for f in (:extrema, :maximum, :minimum)
+    @eval begin
+        Base.$(f)(cdf::AbstractEmpiricalCDF; kws...) = $(f)(cdf.xdata; kws...)
+        Base.$(f)(func, cdf::AbstractEmpiricalCDF; kws...) = $(f)(func, cdf.xdata; kws...)
+    end
+end
+
+# Base.extrema(cdf::AbstractEmpiricalCDF, a::AbstractArray) = extrema(cdf.xdata, a)
+import Base.Order
+Base.issorted(cdf::AbstractEmpiricalCDF, ord::Order.Ordering) = issorted(cdf.xdata, ord)
+
 # Extend Statistics functions
-for f in (:mean, :median, :middle, :std, :stdm, :var, :varm, :quantile)
+for f in (:median, :middle, :std, :stdm, :var, :varm, :quantile)
     @eval begin
         Statistics.$(f)(cdf::AbstractEmpiricalCDF, args...; kws...) = Statistics.$(f)(cdf.xdata, args...; kws...)
+    end
+end
+
+for f in (:mean,)
+    @eval begin
+        Statistics.$(f)(cdf::AbstractEmpiricalCDF; kws...) = Statistics.$(f)(cdf.xdata; kws...)
+        Statistics.$(f)(func, cdf::AbstractEmpiricalCDF; kws...) = Statistics.$(f)(func, cdf.xdata; kws...)
     end
 end
 
@@ -226,12 +244,14 @@ function _inverse(cdf::EmpiricalCDFHi, x)
     cdf.xdata[ind]
 end
 
+import Random
 """
     rand(cdf::EmpiricalCDF)
 
 Pick a random sample from the distribution represented by `cdf`.
 """
 Base.rand(cdf::AbstractEmpiricalCDF) = _inverse(cdf,rand())
+Base.rand(X::Random.AbstractRNG, cdf::AbstractEmpiricalCDF) = _inverse(cdf,rand(X))
 
 """
     finv(cdf::AbstractEmpiricalCDF) --> Function
@@ -253,14 +273,14 @@ julia> maximum(cdf)
 """
 function finv(cdf::EmpiricalCDF)
     function (c::Real)
-        (c < 0 || c >= 1) && throw(DomainError())
+        (c < 0 || c >= 1) && throw(DomainError(c))
         _inverse(cdf,c)
     end
 end
 
 function finv(cdf::EmpiricalCDFHi)
     function (c::Real)
-        (c < cdf.lowreject || c >= 1) && throw(DomainError())
+        (c < cdf.lowreject || c >= 1) && throw(DomainError(c))
         _inverse(cdf,c)
     end
 end
