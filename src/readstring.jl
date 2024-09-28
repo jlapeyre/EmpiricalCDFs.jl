@@ -28,12 +28,12 @@ function readstring(io::IO, stringlength::Int64)
     return unsafe_string(pointer(buf))
 end
 
-function peektypeold(io::IO, T::DataType)
-    p = position(io)
-    res = read(io, T)
-    seek(io, p)
-    return res
-end
+# function peektypeold(io::IO, T::DataType)
+#     p = position(io)
+#     res = read(io, T)
+#     seek(io, p)
+#     return res
+# end
 
 function peektype(io::IO, T::DataType)
     mark(io)
